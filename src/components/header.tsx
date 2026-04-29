@@ -5,22 +5,28 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, Target, BookOpen, Info, Camera
+  ImageIcon, Compass, CloudSun, Target, BookOpen, Info, Camera, ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import Logo from './logo';
 
-const navLinks = [
+const primaryNavLinks = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/#provinces', label: 'Provinces', icon: Compass },
   { href: '/map', label: 'Map', icon: Map },
-  { href: '/virtual-tour', label: 'Virtual Tour', icon: Camera },
+  { href: '/virtual-tour', label: 'Tours', icon: Camera },
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
   { href: '/about', label: 'About', icon: Info },
+];
+
+const utilityLinks = [
+  { href: '/partners', label: 'Partners', icon: Target },
+  { href: '/pro/login', label: 'Pro', icon: Target },
+  { href: '/admin/login', label: 'Admin', icon: ShieldCheck },
 ];
 
 export default function Header() {
@@ -67,24 +73,70 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
+          <div className="hidden lg:flex items-center gap-8">
+            <nav className="flex items-center gap-1">
+              {primaryNavLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    'px-3 py-2 rounded-full text-sm font-semibold transition-all duration-300',
+                    isScrolled
+                      ? 'text-[#74AFDB] hover:text-white hover:bg-white/10'
+                      : isHomePage
+                        ? 'text-white/80 hover:text-white hover:bg-white/20'
+                        : 'text-[#003D5B] hover:text-[#00798C] hover:bg-[#74AFDB]/15'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <div
                 className={cn(
-                  'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300',
+                  "group relative w-[108px] overflow-hidden rounded-full border px-2 py-1 transition-all duration-300 hover:w-[292px] focus-within:w-[292px]",
                   isScrolled
-                    ? 'text-[#74AFDB] hover:text-white hover:bg-white/10'
+                    ? "border-white/15 bg-white/5"
                     : isHomePage
-                      ? 'text-white/80 hover:text-white hover:bg-white/20'
-                      : 'text-[#003D5B] hover:text-[#00798C] hover:bg-[#74AFDB]/15'
+                      ? "border-white/15 bg-white/10"
+                      : "border-[#30638E]/15 bg-[#74AFDB]/10"
                 )}
               >
-                {link.label}
-              </Link>
-            ))}
-            <div className="ml-4 pl-4 border-l border-foreground/10 flex items-center gap-4">
+                <div
+                  className={cn(
+                    "flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
+                    isScrolled
+                      ? "text-white/85"
+                      : isHomePage
+                        ? "text-white/90"
+                        : "text-[#003D5B]"
+                  )}
+                >
+                  Login
+                </div>
+
+                <div className="absolute inset-0 flex items-center gap-1 px-2 py-1 opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                  {utilityLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
+                        isScrolled
+                          ? "text-white/80 hover:bg-white/10 hover:text-white"
+                          : isHomePage
+                            ? "text-white/85 hover:bg-white/15 hover:text-white"
+                            : "text-[#003D5B] hover:bg-white hover:text-[#00798C]"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               <Button
                 asChild
                 className={cn(
@@ -99,7 +151,7 @@ export default function Header() {
                 <Link href="/planner">Plan Your Trip</Link>
               </Button>
             </div>
-          </nav>
+          </div>
 
           {/* Mobile Actions */}
           <div className="lg:hidden flex items-center gap-2">
@@ -149,29 +201,57 @@ export default function Header() {
                     </Link>
                   </div>
 
-                  <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-                    {navLinks.map((link) => (
-                      <SheetClose asChild key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
-                        >
-                          <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
-                            <link.icon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
-                          </div>
-                          {link.label}
-                        </Link>
-                      </SheetClose>
-                    ))}
-                  </nav>
+                  <div className="border-b border-white/10 px-4 py-5">
+                    <p className="px-5 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
+                      Explore
+                    </p>
+                    <nav className="mt-3 space-y-2">
+                      {primaryNavLinks.map((link) => (
+                        <SheetClose asChild key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                          >
+                            <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
+                              <link.icon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+                            </div>
+                            {link.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </nav>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto py-5 px-4">
+                    <p className="px-5 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
+                      Access
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      {utilityLinks.map((link) => (
+                        <SheetClose asChild key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                          >
+                            <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
+                              <link.icon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+                            </div>
+                            {link.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  </div>
 
                   <div className="p-8 mt-auto border-t border-white/10 bg-black/40 text-center">
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mb-6">
                       Truly Pakistan
                     </p>
-                    <Button className="w-full py-7 rounded-2xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg shadow-2xl shadow-primary/30 active:scale-[0.98] transition-transform">
-                      Get Started
-                    </Button>
+                    <SheetClose asChild>
+                      <Button asChild className="w-full py-7 rounded-2xl bg-primary hover:bg-primary/90 text-white font-extrabold text-lg shadow-2xl shadow-primary/30 active:scale-[0.98] transition-transform">
+                        <Link href="/planner">Plan Your Trip</Link>
+                      </Button>
+                    </SheetClose>
                   </div>
                 </div>
               </SheetContent>
@@ -182,4 +262,3 @@ export default function Header() {
     </header>
   );
 }
-

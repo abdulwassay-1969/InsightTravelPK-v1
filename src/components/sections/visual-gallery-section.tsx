@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef, useCallback, type RefObject } from 'react';
 import {
   Upload, X, Camera, MapPin, User, ChevronLeft,
-  ChevronRight, Trash2, ZoomIn, ImagePlus, Star, Loader2
+  ChevronRight, Trash2, ZoomIn, ImagePlus, Star
 } from 'lucide-react';
-import { ImageKitProvider, Image, upload } from '@imagekit/next';
+import { ImageKitProvider, Image } from '@imagekit/next';
+import { upload } from '@imagekit/javascript';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -122,7 +123,6 @@ function UploadModal({
       // 2. Upload DIRECTLY to ImageKit from browser
       const uploadResponse = await upload({
         publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
-        urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!,
         file: preview,
         fileName: `photo-${Date.now()}`,
         folder: "/gallery",
@@ -130,6 +130,10 @@ function UploadModal({
         signature,
         expire
       });
+
+      if (!uploadResponse.url || !uploadResponse.fileId) {
+        throw new Error("Upload completed without a valid ImageKit asset reference.");
+      }
 
       // 3. Save only URL and Metadata to Firestore
       await savePhoto({
@@ -423,7 +427,6 @@ export default function VisualGallerySection() {
   const [photos, setPhotos] = useState<TravelerPhoto[]>(DEFAULT_PHOTOS);
   const [showUpload, setShowUpload] = useState(false);
   const [lightbox, setLightbox] = useState<number | null>(null);
-  const [loaded, setLoaded] = useState(false);
   const uploadReturnFocusRef = useRef<HTMLElement | null>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
 
@@ -434,7 +437,6 @@ export default function VisualGallerySection() {
     } catch {
       setPhotos(DEFAULT_PHOTOS);
     }
-    setLoaded(true);
   }, []);
 
   useEffect(() => { loadPhotos(); }, [loadPhotos]);
@@ -451,7 +453,6 @@ export default function VisualGallerySection() {
   return (
     <ImageKitProvider 
       urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!}
-      publicKey={process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!}
     >
       <section className="py-20 md:py-32 bg-stone-50">
       <div className="container mx-auto px-4 md:px-8">

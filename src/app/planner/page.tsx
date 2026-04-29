@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader, Wand2, MapPin, Calendar, Wallet, RefreshCw } from 'lucide-react';
+import { Loader, Wand2, MapPin, Calendar, Wallet, RefreshCw, Clock, BedDouble, Star, ShieldAlert, Lightbulb } from 'lucide-react';
 import { getTravelPlan } from '@/app/actions';
 import type { TravelPlannerOutput } from '@/ai/flows/planner-flow';
 import { provinces } from '@/lib/data';
@@ -73,6 +73,16 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+function getTodayString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getMaxDateString() {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 2);
+  return d.toISOString().slice(0, 10);
+}
+
 function PlannerPageContent() {
   const searchParams = useSearchParams();
   const [presetLabel, setPresetLabel] = useState<string | null>(null);
@@ -91,7 +101,7 @@ function PlannerPageContent() {
       duration: 7,
       interests: [],
       budget: 'mid-range',
-      startDate: '',
+      startDate: getTodayString(),
       travelers: 2,
       travelStyle: 'family',
       pace: 'balanced',
@@ -253,7 +263,12 @@ function PlannerPageContent() {
                         <FormItem>
                           <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input
+                              type="date"
+                              min={getTodayString()}
+                              max={getMaxDateString()}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -541,14 +556,20 @@ function PlannerPageContent() {
             <Card className="bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-3xl font-headline">
-                  Your Custom Itinerary for {plan.tripTitle}
+                  {plan.tripTitle}
                 </CardTitle>
-                <CardDescription>
-                  A {plan.duration}-day trip exploring the best of{' '}
-                  {plan.destination}.
+                <CardDescription className="mt-1">
+                  {plan.duration}-day trip{' \u00b7 '}{plan.destination}
                 </CardDescription>
+                {plan.summary && (
+                  <p className="mt-3 rounded-lg bg-primary/5 border border-primary/15 px-4 py-3 text-sm text-foreground/80 leading-relaxed">
+                    {plan.summary}
+                  </p>
+                )}
               </CardHeader>
               <CardContent className="space-y-6">
+
+                {/* Budget + Transport overview */}
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-lg border p-4">
                     <h4 className="font-semibold text-primary">Budget Summary</h4>
@@ -560,59 +581,117 @@ function PlannerPageContent() {
                   </div>
                 </div>
 
+                {/* Budget Breakdown */}
                 {plan.budgetBreakdown ? (
                   <div className="rounded-lg border p-4">
                     <h4 className="font-semibold text-primary">Budget Breakdown ({plan.budgetBreakdown.currency})</h4>
                     {plan.budgetBreakdown.estimatedRouteKm != null && plan.budgetBreakdown.estimatedRouteKm > 0 && (
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Estimated driving / route distance between your destination and must-visit stops:{" "}
+                        Estimated route distance:{' '}
                         <span className="font-medium text-foreground">
                           ~{plan.budgetBreakdown.estimatedRouteKm} km
                         </span>
-                        {plan.budgetBreakdown.routeDistanceMethod === "osrm" && " (road route via OSRM)"}
-                        {plan.budgetBreakdown.routeDistanceMethod === "haversine" && " (straight-line fallback)"}
-                        . Local transport cost is scaled using this distance.
+                        {plan.budgetBreakdown.routeDistanceMethod === 'osrm' && ' (road route via OSRM)'}
+                        {plan.budgetBreakdown.routeDistanceMethod === 'haversine' && ' (straight-line fallback)'}
+                        . Transport cost is scaled using this distance.
                       </p>
                     )}
                     <div className="mt-3 grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
-                      <p>Accommodation: <span className="font-medium text-foreground">{plan.budgetBreakdown.accommodation.toLocaleString("en-PK")}</span></p>
-                      <p>Food: <span className="font-medium text-foreground">{plan.budgetBreakdown.food.toLocaleString("en-PK")}</span></p>
-                      <p>Local Transport: <span className="font-medium text-foreground">{plan.budgetBreakdown.localTransport.toLocaleString("en-PK")}</span></p>
-                      <p>Activities: <span className="font-medium text-foreground">{plan.budgetBreakdown.activities.toLocaleString("en-PK")}</span></p>
-                      <p>Contingency (10%): <span className="font-medium text-foreground">{plan.budgetBreakdown.contingency.toLocaleString("en-PK")}</span></p>
-                      <p>Per Person Total: <span className="font-medium text-foreground">{plan.budgetBreakdown.perPersonTotal.toLocaleString("en-PK")}</span></p>
+                      <p>Accommodation: <span className="font-medium text-foreground">{plan.budgetBreakdown.accommodation.toLocaleString('en-PK')}</span></p>
+                      <p>Food: <span className="font-medium text-foreground">{plan.budgetBreakdown.food.toLocaleString('en-PK')}</span></p>
+                      <p>Transport: <span className="font-medium text-foreground">{plan.budgetBreakdown.transport.toLocaleString('en-PK')}</span></p>
+                      <p>Activities: <span className="font-medium text-foreground">{plan.budgetBreakdown.activities.toLocaleString('en-PK')}</span></p>
+                      <p>Contingency (10%): <span className="font-medium text-foreground">{plan.budgetBreakdown.contingency.toLocaleString('en-PK')}</span></p>
+                      <p>Per Person Total: <span className="font-medium text-foreground">{plan.budgetBreakdown.perPersonTotal.toLocaleString('en-PK')}</span></p>
                     </div>
                     <p className="mt-3 text-sm font-semibold text-primary">
-                      Grand Total: {plan.budgetBreakdown.grandTotal.toLocaleString("en-PK")} {plan.budgetBreakdown.currency}
+                      Grand Total: {plan.budgetBreakdown.total.toLocaleString('en-PK')} {plan.budgetBreakdown.currency}
                     </p>
                   </div>
                 ) : null}
 
-                {plan.dailyPlan.map((day, index) => (
-                  <div key={index}>
-                    <h3 className="text-xl font-bold text-primary">
-                      Day {day.day}: {day.title}
-                    </h3>
-                    <p className="text-muted-foreground mt-1">
-                      {day.details}
-                    </p>
-                  </div>
-                ))}
+                {/* Daily Itinerary */}
+                <div className="space-y-5">
+                  <h4 className="font-semibold text-primary text-lg">Day-by-Day Itinerary</h4>
+                  {plan.dailyPlan.map((day, index) => (
+                    <div key={index} className="rounded-xl border bg-muted/20 overflow-hidden">
+                      {/* Day header */}
+                      <div className="bg-primary/10 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="text-base font-bold text-primary">
+                          Day {day.day}: {day.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          {day.drivingTime && (
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              {day.drivingTime}
+                            </span>
+                          )}
+                          {day.overnight && (
+                            <span className="flex items-center gap-1">
+                              <BedDouble className="h-3.5 w-3.5" />
+                              {day.overnight}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="px-4 py-3 space-y-3">
+                        {/* Highlights chips */}
+                        {day.highlights?.length ? (
+                          <div className="flex flex-wrap gap-2">
+                            {day.highlights.map((h, hi) => (
+                              <span
+                                key={hi}
+                                className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                              >
+                                <Star className="h-3 w-3" />
+                                {h}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {day.details}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-                {plan.tips?.length ? (
+                {/* Local Tips */}
+                {plan.localTips?.length ? (
                   <div className="rounded-lg border p-4">
-                    <h4 className="font-semibold text-primary">Local Tips</h4>
+                    <h4 className="flex items-center gap-2 font-semibold text-primary">
+                      <Lightbulb className="h-4 w-4" />
+                      Local Tips
+                    </h4>
                     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                      {plan.tips.map((tip, idx) => (
+                      {plan.localTips.map((tip, idx) => (
                         <li key={idx}>{tip}</li>
                       ))}
                     </ul>
                   </div>
                 ) : null}
+
+                {/* Safety Notes */}
+                {plan.safetyNotes?.length ? (
+                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+                    <h4 className="flex items-center gap-2 font-semibold text-amber-600 dark:text-amber-400">
+                      <ShieldAlert className="h-4 w-4" />
+                      Safety Notes
+                    </h4>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-800/80 dark:text-amber-300/80">
+                      {plan.safetyNotes.map((note, idx) => (
+                        <li key={idx}>{note}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
               </CardContent>
                <CardFooter>
                 <p className="text-sm text-muted-foreground">
-                  This plan is a suggestion. Feel free to adjust it to your liking!
+                  This plan is AI-generated. Always verify local conditions before travel.
                 </p>
               </CardFooter>
             </Card>
