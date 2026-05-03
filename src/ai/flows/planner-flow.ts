@@ -12,28 +12,13 @@ import { z } from 'zod';
 import { computePlannerRouteDistance } from '@/lib/planner-distance';
 
 const TravelPlannerInputSchema = z.object({
-  destination: z.string().describe('The province or major city in Pakistan.'),
+  promptString: z.string().describe('The pre-constructed prompt string containing all user preferences.'),
   duration: z.number().describe('The duration of the trip in days.'),
-  startDate: z.string().describe('Preferred trip start date in YYYY-MM-DD format.'),
-  travelers: z.number().describe('Total number of travelers.'),
-  travelStyle: z.string().describe('Travel style such as solo, couple, family, or friends.'),
-  pace: z.string().describe('Preferred trip pace such as relaxed, balanced, or packed.'),
-  transport: z
-    .string()
-    .describe(
-      'One of: road-trip (car/van on roads only, no flights), public-transport (bus/train/metro/local, no flights unless notes say otherwise), mixed (road + flight allowed). The itinerary must strictly follow this.'
-    ),
-  accommodation: z.string().describe('Preferred accommodation style.'),
-  currency: z.string().describe('Preferred currency code for budget output, e.g., PKR, USD, EUR.'),
-  interests: z
-    .array(z.string())
-    .describe('A list of interests for the trip.'),
-  budget: z
-    .string()
-    .describe(
-      'The budget for the trip (e.g., budget-friendly, mid-range, luxury).'
-    ),
-  notes: z.string().describe('Additional custom notes or constraints.'),
+  adults: z.number().describe('Total number of adults.'),
+  children: z.number().describe('Total number of children.'),
+  toddlers: z.number().describe('Total number of toddlers.'),
+  budgetTier: z.string().describe('The budget tier: Economy, Mid-Range, Comfortable, or Luxury.'),
+  destination: z.string().describe('The destination for route distance calculation.'),
 });
 export type TravelPlannerInput = z.infer<typeof TravelPlannerInputSchema>;
 
@@ -102,18 +87,8 @@ TRANSPORT RULES (CRITICAL — must be consistent across all fields):
 - public-transport: buses, coaches, NATCO, trains, Daewoo, local wagons. NEVER mention flights unless notes explicitly say so.
 - mixed: road + flight segments allowed; reference airports and flights when logical for long legs.
 
-User Preferences:
-- Destination: {{{destination}}}
-- Trip Duration: {{{duration}}} days
-- Start Date: {{{startDate}}}
-- Travelers: {{{travelers}}} ({{{travelStyle}}})
-- Pace: {{{pace}}}
-- Transport: {{{transport}}}
-- Accommodation: {{{accommodation}}}
-- Currency: {{{currency}}}
-- Interests: {{{interests}}}
-- Budget: {{{budget}}}
-- Notes: {{{notes}}}
+User Request:
+{{{promptString}}}
 
 Generate a creative, practical, day-by-day itinerary. For each day provide:
 - A short descriptive title
@@ -191,51 +166,29 @@ const plannerFlow = ai.defineFlow(
     }
 
     const nights = Math.max(1, input.duration - 1);
-    const travelers = Math.max(1, input.travelers);
+    const travelers = Math.max(1, input.adults + input.children); // toddlers are often free, but let's just use adults + children for cost
 
-    const accommodationBaseByType: Record<string, number> = {
-      'budget-guesthouse': 5000,
-      'comfortable-hotel': 11000,
-      'premium-resort': 22000,
-    };
-    const accommodationBudgetMultiplier: Record<string, number> = {
-      'budget-friendly': 0.85,
-      'mid-range': 1,
-      'luxury': 1.5,
-    };
-    const foodPerPersonByBudget: Record<string, number> = {
-      'budget-friendly': 1800,
-      'mid-range': 3500,
-      'luxury': 7000,
-    };
-    const activitiesPerPersonByBudget: Record<string, number> = {
-      'budget-friendly': 1200,
-      'mid-range': 2600,
-      'luxury': 5200,
-    };
-    const transportPerDayByMode: Record<string, number> = {
-      'road-trip': 8500,
-      'public-transport': 3000,
-      'mixed': 13000,
+    const budgetBases: Record<string, { acc: number, food: number, transport: number, activities: number }> = {
+      'Economy': { acc: 4000, food: 1500, transport: 2000, activities: 1000 },
+      'Mid-Range': { acc: 8000, food: 3000, transport: 4000, activities: 2000 },
+      'Comfortable': { acc: 15000, food: 5000, transport: 8000, activities: 4000 },
+      'Luxury': { acc: 30000, food: 10000, transport: 15000, activities: 8000 },
     };
 
-    const accBase = accommodationBaseByType[input.accommodation] ?? 11000;
-    const accMul = accommodationBudgetMultiplier[input.budget] ?? 1;
-    const foodPerPerson = foodPerPersonByBudget[input.budget] ?? 3500;
-    const activitiesPerPerson = activitiesPerPersonByBudget[input.budget] ?? 2600;
-    const transportPerDay = transportPerDayByMode[input.transport] ?? 8500;
+    // Default to Mid-Range if not found
+    const bases = budgetBases[input.budgetTier] || budgetBases['Mid-Range'];
+
+    const accBase = bases.acc;
+    const foodPerPerson = bases.food;
+    const activitiesPerPerson = bases.activities;
+    const transportPerDay = bases.transport;
 
     const routeDist = await computePlannerRouteDistance(input.destination, []);
     const effectiveKm =
       routeDist.waypoints.length >= 2
         ? routeDist.roadKm ?? routeDist.straightLineKm
         : 0;
-    const perKmPkr: Record<string, number> = {
-      'road-trip': 28,
-      'public-transport': 9,
-      mixed: 36,
-    };
-    const pk = perKmPkr[input.transport] ?? 28;
+    const pk = 28; // Defaulting to road-trip per km cost
     const baseTransport = transportPerDay * input.duration;
     let transportTotal: number;
     if (effectiveKm < 1 || routeDist.waypoints.length < 2) {
@@ -246,7 +199,7 @@ const plannerFlow = ai.defineFlow(
       transportTotal = Math.max(transportTotal, Math.round(baseTransport * 0.45));
     }
 
-    const accommodationTotal = Math.round(accBase * accMul * nights);
+    const accommodationTotal = Math.round(accBase * nights);
     const foodTotal = Math.round(foodPerPerson * travelers * input.duration);
     const activitiesTotal = Math.round(activitiesPerPerson * travelers * input.duration);
     const subtotal = accommodationTotal + foodTotal + activitiesTotal + transportTotal;
@@ -254,17 +207,8 @@ const plannerFlow = ai.defineFlow(
     const grandTotal = subtotal + contingency;
     const perPersonTotal = Math.round(grandTotal / travelers);
 
-    const FX_FROM_PKR: Record<string, number> = {
-      PKR: 1,
-      USD: 1 / 278,
-      EUR: 1 / 302,
-      GBP: 1 / 354,
-      AED: 1 / 75.7,
-      SAR: 1 / 74,
-      CNY: 1 / 38.6,
-    };
-    const currency = (input.currency || 'PKR').toUpperCase();
-    const fx = FX_FROM_PKR[currency] ?? 1;
+    const currency = "PKR"; // Fixed to PKR for now based on prompt, or can be dynamic if we added it back to schema. Let's keep it PKR.
+    const fx = 1;
     const convert = (value: number) => Math.round(value * fx);
     const formatMoney = (value: number) => value.toLocaleString('en-PK');
 
