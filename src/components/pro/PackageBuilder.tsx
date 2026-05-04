@@ -34,7 +34,7 @@ export default function PackageBuilder() {
   const [step, setStep] = useState(1);
   const [destination, setDestination] = useState<Region>("Gilgit-Baltistan");
   const [duration, setDuration] = useState<number>(7);
-  const [agencyName, setAgencyName] = useState("PakVista Partner Agency");
+  const [agencyName, setAgencyName] = useState("InsightTravelPK Partner Agency");
   const [logo, setLogo] = useState("Logo Placeholder");
 
   const itinerary = useMemo(() => buildItinerary(destination, duration), [destination, duration]);

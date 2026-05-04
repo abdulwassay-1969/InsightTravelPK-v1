@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     {
       ok: true,
       id: created.id,
-      message: "Partner application received. Our team will review it before publishing it to PakVista.",
+      message: "Partner application received. Our team will review it before publishing it to InsightTravelPK.",
     },
     { status: 201 }
   );

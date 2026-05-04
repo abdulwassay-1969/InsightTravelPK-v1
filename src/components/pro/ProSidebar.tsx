@@ -36,7 +36,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
       <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
         <p className="text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">
-          PakVista Pro
+          InsightTravelPK Pro
         </p>
         <h2 className="mt-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">B2B Dashboard</h2>
       </div>

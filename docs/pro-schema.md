@@ -1,4 +1,4 @@
-# PakVista Pro - Supabase Schema Plan
+# InsightTravelPK Pro - Supabase Schema Plan
 
 This document outlines the planned tables for the B2B Pro dashboard.
 No tables are created yet; this is documentation only.

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import VisualGallerySection from '@/components/sections/visual-gallery-section';
 
 export const metadata: Metadata = {
-    title: 'Traveler Gallery | PakVista',
+    title: 'Traveler Gallery | InsightTravelPK',
     description:
         'Browse HD photos shared by real travelers from across Pakistan. Upload your own and inspire the world.',
 };

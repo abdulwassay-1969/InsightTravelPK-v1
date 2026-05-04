@@ -1,4 +1,4 @@
-# PakVista Pro Realtime Setup (Supabase Free Tier)
+# InsightTravelPK Pro Realtime Setup (Supabase Free Tier)
 
 This project now supports a Supabase-backed data layer for Pro pages with mock fallback.
 

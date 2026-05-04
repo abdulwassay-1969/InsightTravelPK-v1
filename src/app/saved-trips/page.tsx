@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SavedTripsGrid } from "./saved-trips-grid";
 
 export const metadata = {
-  title: "Saved trip ideas | PakVista",
+  title: "Saved trip ideas | InsightTravelPK",
   description:
     "Curated Pakistan itineraries you can open in the Smart Planner with one click.",
 };

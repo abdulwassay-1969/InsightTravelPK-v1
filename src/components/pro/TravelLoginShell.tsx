@@ -60,7 +60,7 @@ export default function TravelLoginShell({
                 <Logo className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">PakVista</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">InsightTravelPK</p>
                 <p className="mt-1 text-lg font-semibold text-slate-900">{eyebrow}</p>
               </div>
             </div>

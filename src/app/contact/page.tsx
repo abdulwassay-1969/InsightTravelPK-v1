@@ -3,7 +3,7 @@ import { PhoneCall, ShieldAlert, Building2 } from "lucide-react";
 import { CONTACTS } from "@/data/contacts";
 
 export const metadata: Metadata = {
-  title: "Contacts | PakVista",
+  title: "Contacts | InsightTravelPK",
   description: "Emergency and tourism department contacts for all provinces and regions of Pakistan.",
 };
 

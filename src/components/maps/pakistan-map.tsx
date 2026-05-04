@@ -370,7 +370,7 @@ export default function PakistanMap() {
       } else {
         const a = document.createElement("a");
         a.href = imageData;
-        a.download = `pakvista-map-${Date.now()}.png`;
+        a.download = `insighttravelpk-map-${Date.now()}.png`;
         a.click();
       }
     } catch (err) {

@@ -2,15 +2,15 @@ import { Metadata } from 'next';
 import { Mountain, Heart, Globe } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'About Us | PakVista',
-  description: 'Learn about PakVista, our mission to digitize tourism in Pakistan, and the passionate team behind the platform.',
+  title: 'About Us | InsightTravelPK',
+  description: 'Learn about InsightTravelPK, our mission to digitize tourism in Pakistan, and the passionate team behind the platform.',
 };
 
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-16 md:py-24 max-w-4xl text-foreground">
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-primary tracking-tight">About PakVista</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-primary tracking-tight">About InsightTravelPK</h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           We are on a mission to modernize and digitize the travel experience in Pakistan, making its unparalleled beauty accessible to the world.
         </p>
@@ -41,12 +41,12 @@ export default function AboutPage() {
       </div>
 
       <div className="prose max-w-none text-muted-foreground text-lg leading-relaxed">
-        <h2 className="text-3xl font-bold text-foreground mb-4">The Story Behind PakVista</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-4">The Story Behind InsightTravelPK</h2>
         <p className="mb-6">
-          PakVista was born out of a simple realization: while Pakistan boasts some of the most dramatic landscapes and rich historical heritage in the world, finding reliable, digitized travel information was often difficult. We wanted to change that.
+          InsightTravelPK was born out of a simple realization: while Pakistan boasts some of the most dramatic landscapes and rich historical heritage in the world, finding reliable, digitized travel information was often difficult. We wanted to change that.
         </p>
         <p className="mb-6">
-          By leveraging modern web technologies and generative AI, we've created a platform that not only provides comprehensive district guides but also helps you plan smart itineraries in seconds. Whether you're exploring the ancient ruins of Mohenjo-daro or braving the Fairy Meadows trek, PakVista is designed to be your digital companion.
+          By leveraging modern web technologies and generative AI, we've created a platform that not only provides comprehensive district guides but also helps you plan smart itineraries in seconds. Whether you're exploring the ancient ruins of Mohenjo-daro or braving the Fairy Meadows trek, InsightTravelPK is designed to be your digital companion.
         </p>
         <div className="bg-primary/5 border border-primary/20 rounded-xl p-8 mt-10">
           <h3 className="text-2xl font-bold text-foreground mb-3 mt-0">Join the Journey</h3>

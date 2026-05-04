@@ -14,7 +14,7 @@ const poppins = Poppins({
 
 
 export const metadata: Metadata = {
-  title: 'PakVista',
+  title: 'InsightTravelPK',
   description:
     'Discover the breathtaking beauty and rich cultural heritage of Pakistan. Your official guide to tourism in Pakistan.',
 };

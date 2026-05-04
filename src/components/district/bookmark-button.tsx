@@ -10,7 +10,7 @@ type BookmarkButtonProps = {
 };
 
 export default function BookmarkButton({ districtSlug, districtName }: BookmarkButtonProps) {
-    const storageKey = 'pakvista-bookmarks';
+    const storageKey = 'insighttravelpk-bookmarks';
     const [bookmarked, setBookmarked] = useState(false);
     const [flash, setFlash] = useState('');
 

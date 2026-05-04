@@ -2,12 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  PRO_ADMIN_CREDENTIALS,
-  PRO_ROLE_COOKIE,
-  PRO_SESSION_COOKIE,
-  isValidAdminLogin,
-} from "@/lib/pro/auth";
+import { PRO_ADMIN_CREDENTIALS } from "@/lib/pro/auth";
+import { loginAction } from "@/app/actions/auth";
 import TravelLoginShell from "@/components/pro/TravelLoginShell";
 
 export default function AdminLoginPage() {
@@ -24,17 +20,22 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const isValid = isValidAdminLogin(email, password);
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("type", "admin");
 
-      if (!isValid) {
-        setError("Invalid admin credentials.");
+      const result = await loginAction(formData);
+
+      if (result.error) {
+        setError(result.error);
         return;
       }
 
-      document.cookie = `${PRO_SESSION_COOKIE}=demo; Path=/; Max-Age=86400; SameSite=Lax`;
-      document.cookie = `${PRO_ROLE_COOKIE}=admin; Path=/; Max-Age=86400; SameSite=Lax`;
       router.push(searchParams.get("from") || "/admin");
       router.refresh();
+    } catch (err) {
+      setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,7 @@ export default function AdminLoginPage() {
 
   return (
     <TravelLoginShell
-      eyebrow="PakVista Admin"
+      eyebrow="InsightTravelPK Admin"
       title="Travel Control Tower"
       description="Review partner applications, manage marketplace supply, and keep routes and permits synchronized from one elevated admin deck."
       accentClassName="bg-[linear-gradient(135deg,#14532d,#059669)]"

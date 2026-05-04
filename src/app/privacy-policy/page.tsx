@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | PakVista',
-  description: 'Privacy Policy and data collection guidelines for PakVista.',
+  title: 'Privacy Policy | InsightTravelPK',
+  description: 'Privacy Policy and data collection guidelines for InsightTravelPK.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">1. Information We Collect</h2>
           <p>
-            When you visit PakVista, we may collect minimal non-personally identifiable information such as browser type, operating system, and anonymous usage data via third-party analytics (like Google Analytics). When you use our contact forms, you may voluntarily provide your name and email address.
+            When you visit InsightTravelPK, we may collect minimal non-personally identifiable information such as browser type, operating system, and anonymous usage data via third-party analytics (like Google Analytics). When you use our contact forms, you may voluntarily provide your name and email address.
           </p>
         </section>
 
@@ -36,14 +36,14 @@ export default function PrivacyPolicyPage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">4. Third-Party Links & Affiliate Partners</h2>
           <p>
-            PakVista contains links to external websites, such as booking services or province tourism portals. We are not responsible for the privacy practices of those external sites. Some outward links may be affiliate links, meaning we may earn a small commission at no extra cost to you.
+            InsightTravelPK contains links to external websites, such as booking services or province tourism portals. We are not responsible for the privacy practices of those external sites. Some outward links may be affiliate links, meaning we may earn a small commission at no extra cost to you.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">5. Contact Us</h2>
           <p>
-            If you have questions about this Privacy Policy, please contact us at <strong>privacy@pakvista.pk</strong>.
+            If you have questions about this Privacy Policy, please contact us at <strong>privacy@insighttravelpk.pk</strong>.
           </p>
         </section>
       </div>

@@ -38,7 +38,7 @@ export default function Footer() {
               <div className="p-2 rounded-xl bg-primary group-hover:bg-primary/80 transition-colors">
                 <Logo className="h-6 w-6 text-white" />
               </div>
-              <span className="tracking-tight">PakVista</span>
+              <span className="tracking-tight">InsightTravelPK</span>
             </Link>
             <p className="text-slate-400 mb-8 leading-relaxed">
               Your ultimate guide to discovering the untold beauty, rich culture, and breathtaking landscapes of Pakistan. Let the adventure begin.
@@ -108,7 +108,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800/60 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-slate-500">
-          <p>© {new Date().getFullYear()} PakVista. Crafted with love for Pakistan.</p>
+          <p>© {new Date().getFullYear()} InsightTravelPK. Crafted with love for Pakistan.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>

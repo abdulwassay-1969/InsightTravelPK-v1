@@ -243,7 +243,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
                   Local Partners in <span className="text-primary">{province.name}</span>
                 </h2>
                 <p className="text-slate-500 mt-2 text-lg">
-                  Approved hotels, guesthouses, cafes, restaurants, guides, and activity providers visible to all PakVista users.
+                  Approved hotels, guesthouses, cafes, restaurants, guides, and activity providers visible to all InsightTravelPK users.
                 </p>
               </div>
               <Button asChild className="hidden md:flex rounded-full mt-6 md:mt-0 shadow-lg hover:shadow-primary/30">

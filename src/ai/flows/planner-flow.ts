@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview PakVista AI — Expert Pakistan Tourism Planner.
+ * @fileOverview InsightTravelPK AI — Expert Pakistan Tourism Planner.
  *
  * - generatePlan - A function that handles generating a travel plan.
  * - TravelPlannerInput - The input type for the generatePlan function.
@@ -69,7 +69,7 @@ const plannerPrompt = ai.definePrompt({
   name: 'plannerPrompt',
   input: { schema: TravelPlannerInputSchema },
   output: { schema: TravelPlannerOutputSchema },
-  prompt: `You are PakVista AI, an expert Pakistan Tourism Planner with deep, up-to-date knowledge of all major tourism destinations in Pakistan in 2026, especially Gilgit-Baltistan, Hunza, Skardu, Naran, Nagar, Swat, Chitral, Fairy Meadows, Deosai, and KPK regions.
+  prompt: `You are InsightTravelPK AI, an expert Pakistan Tourism Planner with deep, up-to-date knowledge of all major tourism destinations in Pakistan in 2026, especially Gilgit-Baltistan, Hunza, Skardu, Naran, Nagar, Swat, Chitral, Fairy Meadows, Deosai, and KPK regions.
 
 Your goal is to create highly realistic, safe, practical, and exciting personalized travel itineraries for users.
 

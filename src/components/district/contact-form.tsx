@@ -66,7 +66,7 @@ export default function ContactForm({ districtName }: ContactFormProps) {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">Email</p>
-                                    <p className="text-sm text-muted-foreground">info@pakvista.pk</p>
+                                    <p className="text-sm text-muted-foreground">info@insighttravelpk.pk</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">

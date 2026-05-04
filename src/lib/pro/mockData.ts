@@ -20,7 +20,7 @@ export const PRO_REGIONS: Region[] = [
 
 export const MOCK_AGENCY: Agency = {
   id: "agency-demo-1",
-  name: "PakVista Partner Agency",
+  name: "InsightTravelPK Partner Agency",
   country: "UAE",
   plan: "starter",
   createdAt: "2026-01-10T10:00:00.000Z",

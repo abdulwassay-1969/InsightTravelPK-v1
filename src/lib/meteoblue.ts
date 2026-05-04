@@ -5,7 +5,8 @@ import type { WeatherData, WeatherInput } from "@/ai/flows/weather-flow";
 import { cities } from './data';
 
 // Maps Meteoblue pictocode to a simpler icon name
-const mapIcon = (pictocode: number) => {
+const mapIcon = (rawPictocode: number) => {
+  const pictocode = rawPictocode > 100 ? rawPictocode - 100 : rawPictocode;
   if (pictocode <= 2) return 'clear-day';
   if (pictocode <= 5) return 'partly-cloudy-day';
   if (pictocode <= 7) return 'cloudy';
@@ -17,7 +18,9 @@ const mapIcon = (pictocode: number) => {
 };
 
 // Simple pictocode → human-readable description
-const getDescription = (pictocode: number) => {
+const getDescription = (rawPictocode: number) => {
+  if (rawPictocode === undefined || rawPictocode === null) return 'Available Soon';
+  const pictocode = rawPictocode > 100 ? rawPictocode - 100 : rawPictocode;
   if (pictocode <= 2) return 'Clear Sky';
   if (pictocode <= 5) return 'Partly Cloudy';
   if (pictocode <= 7) return 'Overcast';
@@ -25,7 +28,7 @@ const getDescription = (pictocode: number) => {
   if (pictocode >= 11 && pictocode <= 13) return 'Showers';
   if (pictocode === 14 || pictocode === 24) return 'Snow';
   if (pictocode >= 15 && pictocode <= 23) return 'Thunderstorm';
-  return 'Unknown';
+  return 'Clear Sky'; // Fallback instead of Unknown
 };
 
 export async function fetchWeatherData({ city }: WeatherInput): Promise<WeatherData> {

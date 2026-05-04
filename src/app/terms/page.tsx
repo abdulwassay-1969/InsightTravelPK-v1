@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | PakVista',
-  description: 'Terms of service and user guidelines for PakVista.',
+  title: 'Terms of Service | InsightTravelPK',
+  description: 'Terms of service and user guidelines for InsightTravelPK.',
 };
 
 export default function TermsOfServicePage() {
@@ -15,7 +15,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">1. Acceptance of Terms</h2>
           <p>
-            By accessing and using PakVista, you accept and agree to be bound by the terms and provision of this agreement. PakVista serves as an informational travel guide for tourism in Pakistan.
+            By accessing and using InsightTravelPK, you accept and agree to be bound by the terms and provision of this agreement. InsightTravelPK serves as an informational travel guide for tourism in Pakistan.
           </p>
         </section>
 
@@ -36,14 +36,14 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">4. Intellectual Property & User Content</h2>
           <p>
-            Content on this site is either owned by PakVista, sourced from public domain entities, or used under open licenses like Unsplash. If you upload photos to the Gallery, you retain copyright but grant us a non-exclusive license to display those images across the platform. You may only upload content you have the right to share.
+            Content on this site is either owned by InsightTravelPK, sourced from public domain entities, or used under open licenses like Unsplash. If you upload photos to the Gallery, you retain copyright but grant us a non-exclusive license to display those images across the platform. You may only upload content you have the right to share.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-3">5. Limitation of Liability</h2>
           <p>
-            Under no circumstances shall PakVista or its creators be liable for any direct, indirect, incidental, or consequential damages resulting from the use of or inability to use this website, including but not limited to reliance on any information obtained from this site.
+            Under no circumstances shall InsightTravelPK or its creators be liable for any direct, indirect, incidental, or consequential damages resulting from the use of or inability to use this website, including but not limited to reliance on any information obtained from this site.
           </p>
         </section>
       </div>

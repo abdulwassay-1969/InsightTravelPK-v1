@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               Platform Administration
             </p>
             <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 md:text-base">
-              PakVista Admin Portal
+              InsightTravelPK Admin Portal
             </h1>
           </div>
           <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
-# PakVista
+# InsightTravelPK
 
-PakVista is a Next.js 15 travel platform focused on Pakistan tourism.
+InsightTravelPK is a Next.js 15 travel platform focused on Pakistan tourism.
 
 It includes:
 

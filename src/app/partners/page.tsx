@@ -84,9 +84,9 @@ export default function PartnersPage() {
 
   return (
     <TravelLoginShell
-      eyebrow="PakVista Partners"
+      eyebrow="InsightTravelPK Partners"
       title="Travel Partner Gateway"
-      description="Bring your hotel, guesthouse, cafe, restaurant, guide service, or activity brand into the PakVista network and get discovered across destination pages."
+      description="Bring your hotel, guesthouse, cafe, restaurant, guide service, or activity brand into the InsightTravelPK network and get discovered across destination pages."
       leadBadgeText="Partner Onboarding"
       heroTitle="Launch your travel business into the spotlight."
       heroDescription="Designed for modern tourism brands that want a premium presence, admin-reviewed publishing, and visibility across both agency tools and public destination discovery."
@@ -97,7 +97,7 @@ export default function PartnersPage() {
       switchHref="/pro/login"
       switchText="Open Pro login"
       credentialTitle="How partner onboarding works"
-      credentialText="Apply here, get reviewed by admin, and once approved your listing goes live across PakVista."
+      credentialText="Apply here, get reviewed by admin, and once approved your listing goes live across InsightTravelPK."
       stats={[
         { label: "Types", value: "09" },
         { label: "Regions", value: "08" },

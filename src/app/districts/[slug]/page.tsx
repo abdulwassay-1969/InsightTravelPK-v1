@@ -29,13 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const province = provinces.find((p) => p.districts.some((d) => d.slug === slug));
 
   if (!district || !province) {
-    return { title: 'District Not Found | PakVista' };
+    return { title: 'District Not Found | InsightTravelPK' };
   }
 
   const detail = getDistrictDetail(slug);
   return {
-    title: `${district.name}, ${province.name} - Tourism & Travel Guide | PakVista`,
-    description: detail?.description || `Discover the beauty of ${district.name} in ${province.name}. Explore attractions, culture, and plan your trip with PakVista.`,
+    title: `${district.name}, ${province.name} - Tourism & Travel Guide | InsightTravelPK`,
+    description: detail?.description || `Discover the beauty of ${district.name} in ${province.name}. Explore attractions, culture, and plan your trip with InsightTravelPK.`,
   };
 }
 

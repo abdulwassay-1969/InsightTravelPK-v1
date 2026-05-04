@@ -135,7 +135,7 @@ function mapAgency(row: Json): Agency {
 
   return {
     id: String(row.id),
-    name: String(row.name ?? "PakVista Partner Agency"),
+    name: String(row.name ?? "InsightTravelPK Partner Agency"),
     country: String(row.country ?? "Pakistan"),
     plan,
     createdAt: String(row.created_at ?? new Date().toISOString()),

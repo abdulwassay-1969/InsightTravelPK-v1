@@ -4,7 +4,7 @@ import { Camera, Compass, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Virtual Tour | PakVista",
+  title: "Virtual Tour | InsightTravelPK",
   description:
     "Explore Pakistan virtually with the Pakistan Motorcycle Tour playlist, more YouTube clips, and quick links to the map and Smart Planner.",
 };

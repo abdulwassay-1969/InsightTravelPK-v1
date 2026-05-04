@@ -2,12 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  PRO_DEMO_CREDENTIALS,
-  PRO_ROLE_COOKIE,
-  PRO_SESSION_COOKIE,
-  isValidAgentLogin,
-} from "@/lib/pro/auth";
+import { PRO_DEMO_CREDENTIALS } from "@/lib/pro/auth";
+import { loginAction } from "@/app/actions/auth";
 import TravelLoginShell from "@/components/pro/TravelLoginShell";
 
 export default function ProLoginPage() {
@@ -24,17 +20,22 @@ export default function ProLoginPage() {
     setLoading(true);
 
     try {
-      const isValid = isValidAgentLogin(email, password);
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("type", "agent");
 
-      if (!isValid) {
-        setError("Invalid agency credentials. Use the provided agency demo account.");
+      const result = await loginAction(formData);
+
+      if (result.error) {
+        setError(result.error);
         return;
       }
 
-      document.cookie = `${PRO_SESSION_COOKIE}=demo; Path=/; Max-Age=86400; SameSite=Lax`;
-      document.cookie = `${PRO_ROLE_COOKIE}=agent; Path=/; Max-Age=86400; SameSite=Lax`;
       router.push(searchParams.get("from") || "/pro/dashboard");
       router.refresh();
+    } catch (err) {
+      setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,7 @@ export default function ProLoginPage() {
 
   return (
     <TravelLoginShell
-      eyebrow="PakVista Pro"
+      eyebrow="InsightTravelPK Pro"
       title="Agency Travel Deck"
       description="Access suppliers, routes, permits, and itinerary tools through a modern B2B workspace made for fast-moving travel teams."
       accentClassName="bg-[linear-gradient(135deg,#0b7285,#00798C)]"

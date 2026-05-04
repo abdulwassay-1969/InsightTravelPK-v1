@@ -68,7 +68,7 @@ export default function Header() {
               'text-xl font-bold tracking-tighter transition-colors',
               isScrolled ? 'text-white' : isHomePage ? 'text-white' : 'text-slate-900'
             )}>
-              PakVista
+              InsightTravelPK
             </span>
           </Link>
 
@@ -197,7 +197,7 @@ export default function Header() {
                       <div className="p-2.5 rounded-xl bg-primary">
                         <Logo className="h-6 w-6 text-white" />
                       </div>
-                      <span className="text-2xl font-bold tracking-tighter">PakVista</span>
+                      <span className="text-2xl font-bold tracking-tighter">InsightTravelPK</span>
                     </Link>
                   </div>
 
