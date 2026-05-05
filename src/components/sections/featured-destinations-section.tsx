@@ -109,6 +109,7 @@ export default function FeaturedDestinationsSection() {
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                           placeholder="blur"
                           blurDataURL={blurUrl}
+                          priority={idx === 0}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent" />
                         <div className="relative flex h-full flex-col justify-end p-8 text-white">

@@ -34,11 +34,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Wand2, MapPin, Calendar, RefreshCw, Clock, BedDouble, Star, ShieldAlert, Lightbulb, Wallet } from 'lucide-react';
+import { Loader, Wand2, MapPin, Calendar, RefreshCw, Clock, BedDouble, Star, ShieldAlert, Lightbulb, Wallet, WifiOff } from 'lucide-react';
 import { getTravelPlan } from '@/app/actions';
 import type { TravelPlannerOutput } from '@/ai/flows/planner-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { getSavedTripById } from '@/data/saved-trips';
+import { cn } from '@/lib/utils';
 
 const PROVINCES = ["All Pakistan", "Punjab", "Sindh", "KPK", "Balochistan", "Gilgit-Baltistan", "AJK", "Islamabad"];
 
@@ -119,7 +120,12 @@ function calculateEndDate(start: string, duration: number) {
   return d.toISOString().slice(0, 10);
 }
 
+import { useAuth } from '@/components/auth-context';
+import { saveTrip } from '@/lib/trips';
+import { AuthDialog } from '@/components/auth-dialog';
+
 function PlannerPageContent() {
+  const { user, loginWithGoogle } = useAuth();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   
@@ -128,12 +134,62 @@ function PlannerPageContent() {
   
   const [presetLabel, setPresetLabel] = useState<string | null>(null);
   const [plan, setPlan] = useState<TravelPlannerOutput | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [rates, setRates] = useState<Record<string, number> | null>(null);
   const [ratesUpdatedAt, setRatesUpdatedAt] = useState<string>('');
   const [ratesError, setRatesError] = useState<string | null>(null);
   const [ratesLoading, setRatesLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+
+  const handleSaveTrip = async () => {
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
+
+    if (!plan) return;
+
+    try {
+      setIsSaving(true);
+      await saveTrip(user.uid, {
+        tripTitle: plan.tripTitle,
+        destination: plan.destination,
+        duration: String(plan.duration),
+        tripData: plan,
+      });
+      setHasSaved(true);
+      toast({
+        title: "Trip Saved!",
+        description: "You can find your saved trips in the 'My Trips' section.",
+      });
+    } catch (err) {
+      toast({
+        title: "Save Failed",
+        description: "Could not save your trip. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    setIsOffline(!navigator.onLine);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -285,6 +341,7 @@ function PlannerPageContent() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(135deg,#00798C_0%,#30638E_55%,#003D5B_100%)]">
+      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
       <div className="container mx-auto px-4 py-12 md:py-16 pt-24 md:pt-32">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] xl:items-start">
           <div className="flex min-w-0 flex-col gap-6">
@@ -714,13 +771,18 @@ function PlannerPageContent() {
 
                       <Button 
                         type="submit" 
-                        disabled={isPending} 
-                        className="w-full bg-[#0F6E56] hover:bg-[#0b5341] text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-[#0F6E56]/20 transition-all hover:shadow-[#0F6E56]/30"
+                        disabled={isPending || isOffline} 
+                        className="w-full bg-[#0F6E56] hover:bg-[#0b5341] text-white h-14 rounded-xl font-bold text-lg shadow-lg shadow-[#0F6E56]/20 transition-all hover:shadow-[#0F6E56]/30 disabled:opacity-50 disabled:grayscale"
                       >
                         {isPending ? (
                           <>
                             <Loader className="mr-3 h-5 w-5 animate-spin" />
                             Generating Your Plan...
+                          </>
+                        ) : isOffline ? (
+                          <>
+                            <WifiOff className="mr-2 h-5 w-5" />
+                            Offline: Check Connection
                           </>
                         ) : (
                            <>
@@ -747,12 +809,33 @@ function PlannerPageContent() {
               <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
                 <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-xl overflow-hidden rounded-2xl">
                   <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent">
-                    <CardTitle className="text-3xl font-headline text-foreground">
-                      {plan.tripTitle}
-                    </CardTitle>
-                    <CardDescription className="mt-1 text-base text-muted-foreground">
-                      {plan.duration}-day trip{' \u00b7 '}{plan.destination}
-                    </CardDescription>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <CardTitle className="text-3xl font-headline text-foreground">
+                          {plan.tripTitle}
+                        </CardTitle>
+                        <CardDescription className="mt-1 text-base text-muted-foreground">
+                          {plan.duration}-day trip{' \u00b7 '}{plan.destination}
+                        </CardDescription>
+                      </div>
+                      <Button
+                        onClick={handleSaveTrip}
+                        disabled={isSaving || hasSaved}
+                        className={cn(
+                          "rounded-full gap-2 transition-all",
+                          hasSaved ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100" : "bg-primary text-white"
+                        )}
+                        variant={hasSaved ? "outline" : "default"}
+                      >
+                        {isSaving ? (
+                          <Loader className="h-4 w-4 animate-spin" />
+                        ) : hasSaved ? (
+                          <>&#10003; Saved</>
+                        ) : (
+                          <>Save Trip</>
+                        )}
+                      </Button>
+                    </div>
                     {plan.summary && (
                       <p className="mt-4 rounded-xl bg-background border border-border p-4 text-sm text-foreground/90 leading-relaxed shadow-sm">
                         {plan.summary}

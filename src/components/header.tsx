@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, Target, BookOpen, Info, Camera, ShieldCheck
+  ImageIcon, Compass, CloudSun, Target, BookOpen, Info, Camera, ShieldCheck, LogIn
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -29,8 +29,14 @@ const utilityLinks = [
   { href: '/admin/login', label: 'Admin', icon: ShieldCheck },
 ];
 
+import { useAuth } from './auth-context';
+
+import { AuthDialog } from './auth-dialog';
+
 export default function Header() {
+  const { user, loginWithGoogle, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
@@ -42,12 +48,18 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navLinks = [
+    ...primaryNavLinks,
+    ...(user ? [{ href: '/saved-trips', label: 'My Trips', icon: ImageIcon }] : []),
+  ];
+
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-[2000] transition-all duration-500 ease-in-out px-4 py-4',
       )}
     >
+      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
       <div className={cn(
         "container mx-auto rounded-3xl transition-all duration-500 border overflow-hidden shadow-2xl ",
         isScrolled
@@ -75,7 +87,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             <nav className="flex items-center gap-1">
-              {primaryNavLinks.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -94,48 +106,71 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <div
-                className={cn(
-                  "group relative w-[108px] overflow-hidden rounded-full border px-2 py-1 transition-all duration-300 hover:w-[292px] focus-within:w-[292px]",
-                  isScrolled
-                    ? "border-white/15 bg-white/5"
-                    : isHomePage
-                      ? "border-white/15 bg-white/10"
-                      : "border-[#30638E]/15 bg-[#74AFDB]/10"
-                )}
-              >
-                <div
+              {user ? (
+                <Button 
+                  onClick={() => logout()}
+                  variant="ghost"
                   className={cn(
-                    "flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
-                    isScrolled
-                      ? "text-white/85"
-                      : isHomePage
-                        ? "text-white/90"
-                        : "text-[#003D5B]"
+                    "rounded-full font-semibold transition-all",
+                    isScrolled ? "text-white hover:bg-white/10" : isHomePage ? "text-white hover:bg-white/20" : "text-[#003D5B] hover:bg-[#74AFDB]/15"
                   )}
                 >
-                  Login
-                </div>
+                  Logout
+                </Button>
+              ) : (
+                <div
+                  className={cn(
+                    "group relative w-[108px] overflow-hidden rounded-full border px-2 py-1 transition-all duration-300 hover:w-[292px] focus-within:w-[292px]",
+                    isScrolled
+                      ? "border-white/15 bg-white/5"
+                      : isHomePage
+                        ? "border-white/15 bg-white/10"
+                        : "border-[#30638E]/15 bg-[#74AFDB]/10"
+                  )}
+                >
+                  <button
+                    onClick={() => setIsAuthDialogOpen(true)}
+                    className={cn(
+                      "flex items-center justify-center w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
+                      isScrolled
+                        ? "text-white/85"
+                        : isHomePage
+                          ? "text-white/90"
+                          : "text-[#003D5B]"
+                    )}
+                  >
+                    Login
+                  </button>
 
-                <div className="absolute inset-0 flex items-center gap-1 px-2 py-1 opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
-                  {utilityLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
+                  <div className="absolute inset-0 flex items-center gap-1 px-2 py-1 opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                    {utilityLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={cn(
+                          "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
+                          isScrolled
+                            ? "text-white/80 hover:bg-white/10 hover:text-white"
+                            : isHomePage
+                              ? "text-white/85 hover:bg-white/15 hover:text-white"
+                              : "text-[#003D5B] hover:bg-white hover:text-[#00798C]"
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                    <button 
+                      onClick={() => setIsAuthDialogOpen(true)}
                       className={cn(
                         "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
-                        isScrolled
-                          ? "text-white/80 hover:bg-white/10 hover:text-white"
-                          : isHomePage
-                            ? "text-white/85 hover:bg-white/15 hover:text-white"
-                            : "text-[#003D5B] hover:bg-white hover:text-[#00798C]"
+                        isScrolled ? "text-white/80 hover:bg-white/10" : isHomePage ? "text-white/85 hover:bg-white/15" : "text-[#003D5B] hover:bg-white"
                       )}
                     >
-                      {link.label}
-                    </Link>
-                  ))}
+                      Login
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <Button
                 asChild
@@ -240,6 +275,30 @@ export default function Header() {
                           </Link>
                         </SheetClose>
                       ))}
+                      {!user && (
+                        <Button
+                          onClick={() => setIsAuthDialogOpen(true)}
+                          variant="ghost"
+                          className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                        >
+                          <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
+                            <LogIn className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+                          </div>
+                          Login / Register
+                        </Button>
+                      )}
+                      {user && (
+                        <Button
+                          onClick={() => logout()}
+                          variant="ghost"
+                          className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-red-400 active:scale-95 group"
+                        >
+                          <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-red-500/20 transition-colors">
+                            <LogIn className="h-5 w-5 text-slate-500 group-hover:text-red-400 transition-colors" />
+                          </div>
+                          Logout
+                        </Button>
+                      )}
                     </div>
                   </div>
 

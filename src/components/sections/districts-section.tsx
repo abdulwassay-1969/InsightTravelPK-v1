@@ -93,6 +93,7 @@ export default function DistrictsSection() {
                 className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                 placeholder="blur"
                 blurDataURL={blurUrl}
+                priority={province.slug === 'gilgit-baltistan'}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent transition-opacity duration-300" />
               

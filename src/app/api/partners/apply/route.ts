@@ -15,7 +15,21 @@ type PartnerApplicationBody = {
   website?: string;
 };
 
+import { checkRateLimit } from "@/lib/rate-limit";
+
 export async function POST(request: NextRequest) {
+  // Get IP for rate limiting
+  const ip = request.headers.get("x-forwarded-for") || "anonymous";
+  const { success, error } = checkRateLimit(ip, 'partner-apply', {
+    maxAttempts: 5,
+    windowMs: 5 * 60 * 1000,
+    errorMessage: "Too many application attempts. Please try again in 5 minutes."
+  });
+
+  if (!success) {
+    return NextResponse.json({ error }, { status: 429 });
+  }
+
   const body = (await request.json()) as PartnerApplicationBody;
 
   if (!body.name || !body.type || !body.region || !body.district || !body.location || !body.contactPerson || !body.phone || !body.email) {

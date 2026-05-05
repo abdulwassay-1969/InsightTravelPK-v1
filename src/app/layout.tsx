@@ -1,9 +1,13 @@
 import type {Metadata} from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import ConnectivityManager from '@/components/connectivity-manager';
+import NavigationProgress from '@/components/navigation-progress';
 import { Inter, Poppins } from 'next/font/google';
+import { AuthProvider } from '@/components/auth-context';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
@@ -34,16 +38,22 @@ export default function RootLayout({
         className="font-body antialiased flex flex-col min-h-screen"
         suppressHydrationWarning
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[3000] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
-        >
-          Skip to main content
-        </a>
-        <Header />
-        <main id="main-content" className="flex-grow">{children}</main>
-        <Footer />
-        <Toaster />
+        <AuthProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[3000] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+          >
+            Skip to main content
+          </a>
+          <Header />
+          <ConnectivityManager />
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
+          <main id="main-content" className="flex-grow">{children}</main>
+          <Footer />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

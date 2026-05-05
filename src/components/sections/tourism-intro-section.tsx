@@ -65,7 +65,7 @@ export default function TourismIntroSection() {
 
         <Carousel opts={{ align: "center", loop: true }} className="mx-auto w-full max-w-6xl">
           <CarouselContent>
-            {provinceSlides.map((slide) => (
+            {provinceSlides.map((slide, idx) => (
               <CarouselItem key={slide.name}>
                 <article
                   className={`grid gap-5 md:gap-8 rounded-2xl p-4 md:p-8 shadow-sm md:grid-cols-2 md:items-center ${
@@ -87,6 +87,7 @@ export default function TourismIntroSection() {
                       width={900}
                       height={560}
                       className="h-[220px] sm:h-[260px] w-full object-cover md:h-[340px]"
+                      priority={idx === 0}
                     />
                   </div>
                 </article>

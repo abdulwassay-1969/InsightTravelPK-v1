@@ -51,29 +51,12 @@ export function resolveRoleForEmail(email: string): ProRole {
   return email.trim().toLowerCase() === PRO_ADMIN_CREDENTIALS.email ? "admin" : "agent";
 }
 
-// Memory map for basic rate limiting
-const loginAttempts = new Map<string, { count: number; expiresAt: number }>();
+import { checkRateLimit as genericCheckRateLimit } from '../rate-limit';
 
 export function checkRateLimit(identifier: string): { success: boolean; error?: string } {
-  const now = Date.now();
-  const windowMs = 5 * 60 * 1000; // 5 minutes
-  const maxAttempts = 5;
-
-  let record = loginAttempts.get(identifier);
-  if (record && now > record.expiresAt) {
-    record = undefined;
-  }
-
-  if (!record) {
-    loginAttempts.set(identifier, { count: 1, expiresAt: now + windowMs });
-    return { success: true };
-  }
-
-  if (record.count >= maxAttempts) {
-    return { success: false, error: "Too many login attempts. Please try again in 5 minutes." };
-  }
-
-  record.count += 1;
-  loginAttempts.set(identifier, record);
-  return { success: true };
+  return genericCheckRateLimit(identifier, 'login', {
+    maxAttempts: 5,
+    windowMs: 5 * 60 * 1000,
+    errorMessage: "Too many login attempts. Please try again in 5 minutes."
+  });
 }
