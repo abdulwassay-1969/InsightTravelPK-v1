@@ -22,7 +22,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await loginWithEmail(email, password, remember);
-      router.push("/my-trips");
+      router.push("/saved-trips");
     } catch (err: any) {
       setError(err?.message || "Failed to sign in. Please check your credentials.");
     } finally {
@@ -97,7 +97,7 @@ export default function LoginPage() {
               setLoading(true);
               try {
                 await loginWithGoogle();
-                router.push('/my-trips');
+                router.push('/saved-trips');
               } catch (err: any) {
                 setError(err?.message || 'Google sign-in failed.');
               } finally {

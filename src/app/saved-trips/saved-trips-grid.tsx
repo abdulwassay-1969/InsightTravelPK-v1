@@ -1,40 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarRange,
-  ChevronDown,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, CalendarRange, ChevronDown, MapPin, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SAVED_TRIPS, type SavedTrip } from "@/data/saved-trips";
 import { cn } from "@/lib/utils";
 
-/** Full class strings so Tailwind includes them (dynamic `trip.gradient` from data is not scanned). */
 const ACCENT_BAR_BY_ID: Record<string, string> = {
-  "hunza-silk-road":
-    "bg-gradient-to-r from-cyan-600 via-sky-700 to-indigo-900",
-  "swat-alpine":
-    "bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900",
-  "lahore-mughal":
-    "bg-gradient-to-r from-amber-700 via-orange-800 to-rose-950",
-  "islamabad-capital":
-    "bg-gradient-to-r from-slate-600 via-zinc-800 to-stone-950",
-  "skardu-highlands":
-    "bg-gradient-to-r from-blue-800 via-slate-800 to-cyan-950",
-  "karachi-sindh":
-    "bg-gradient-to-r from-rose-800 via-fuchsia-900 to-violet-950",
-  "gwadar-coast":
-    "bg-gradient-to-r from-amber-900 via-orange-950 to-stone-950",
-  "neelum-kashmir":
-    "bg-gradient-to-r from-green-800 via-emerald-900 to-teal-950",
+  "hunza-silk-road": "bg-gradient-to-r from-cyan-600 via-sky-700 to-indigo-900",
+  "swat-alpine": "bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900",
+  "lahore-mughal": "bg-gradient-to-r from-amber-700 via-orange-800 to-rose-950",
+  "islamabad-capital": "bg-gradient-to-r from-slate-600 via-zinc-800 to-stone-950",
+  "skardu-highlands": "bg-gradient-to-r from-blue-800 via-slate-800 to-cyan-950",
+  "karachi-sindh": "bg-gradient-to-r from-rose-800 via-fuchsia-900 to-violet-950",
+  "gwadar-coast": "bg-gradient-to-r from-amber-900 via-orange-950 to-stone-950",
+  "neelum-kashmir": "bg-gradient-to-r from-green-800 via-emerald-900 to-teal-950",
 };
 
 const INTEREST_LABELS: Record<string, string> = {
@@ -115,12 +96,6 @@ function TripDetails({ trip }: { trip: SavedTrip }) {
           <p className="mt-1 leading-relaxed text-slate-700">{p.notes}</p>
         </div>
       ) : null}
-      {p.dietaryNeeds && p.dietaryNeeds !== "None" ? (
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dietary</p>
-          <p className="mt-1 text-slate-700">{p.dietaryNeeds}</p>
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -142,12 +117,10 @@ export function SavedTripsGrid() {
           key={trip.id}
           className="flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md transition hover:shadow-lg"
         >
-          {/* Accent strip — gradient visible on all browsers */}
           <div
             className={cn(
               "h-2 w-full shrink-0",
-              ACCENT_BAR_BY_ID[trip.id] ??
-                "bg-gradient-to-r from-[#00798C] to-[#003D5B]"
+              ACCENT_BAR_BY_ID[trip.id] ?? "bg-gradient-to-r from-[#00798C] to-[#003D5B]"
             )}
             aria-hidden
           />
@@ -160,10 +133,7 @@ export function SavedTripsGrid() {
                 </h2>
                 <p className="mt-2 text-sm leading-snug text-slate-600">{trip.subtitle}</p>
               </div>
-              <Sparkles
-                className="h-6 w-6 shrink-0 text-[#00798C]"
-                aria-hidden
-              />
+              <Sparkles className="h-6 w-6 shrink-0 text-[#00798C]" aria-hidden />
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
@@ -180,12 +150,10 @@ export function SavedTripsGrid() {
             <div className="mt-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Highlights</p>
               <ul className="mt-2 space-y-2 text-sm leading-relaxed text-slate-700">
-                {trip.highlights.map((h) => (
-                  <li key={h} className="flex gap-2">
-                    <span className="mt-0.5 text-[#00798C]" aria-hidden>
-                      •
-                    </span>
-                    <span>{h}</span>
+                {trip.highlights.map((highlight) => (
+                  <li key={highlight} className="flex gap-2">
+                    <span className="mt-0.5 text-[#00798C]" aria-hidden>•</span>
+                    <span>{highlight}</span>
                   </li>
                 ))}
               </ul>
@@ -201,10 +169,7 @@ export function SavedTripsGrid() {
               </CollapsibleContent>
             </Collapsible>
 
-            <Button
-              asChild
-              className="mt-6 w-full bg-[#00798C] text-white hover:bg-[#006a7a]"
-            >
+            <Button asChild className="mt-6 w-full bg-[#00798C] text-white hover:bg-[#006a7a]">
               <Link href={`/planner?preset=${trip.id}`}>
                 Open in Smart Planner
                 <ArrowRight className="ml-2 h-4 w-4" />

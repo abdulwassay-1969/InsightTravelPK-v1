@@ -19,7 +19,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await signupWithEmail(email, password);
-      router.push("/my-trips");
+      router.push("/saved-trips");
     } catch (err: any) {
       setError(err?.message || "Failed to create account.");
     } finally {

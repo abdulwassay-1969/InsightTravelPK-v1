@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Wand2, MapPin, Calendar, RefreshCw, Clock, BedDouble, Star, ShieldAlert, Lightbulb, Wallet, WifiOff } from 'lucide-react';
+import { Loader, Wand2, MapPin, Calendar, RefreshCw, Clock, BedDouble, Star, ShieldAlert, Lightbulb, Wallet, WifiOff, Download, Save } from 'lucide-react';
 import { getTravelPlan } from '@/app/actions';
 import type { TravelPlannerOutput } from '@/ai/flows/planner-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -124,8 +124,96 @@ import { useAuth } from '@/components/auth-context';
 import { saveTrip } from '@/lib/trips';
 import { AuthDialog } from '@/components/auth-dialog';
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildPlanPrintHtml(plan: TravelPlannerOutput) {
+  const days = plan.dailyPlan
+    .map(
+      (day) => `
+        <section class="day-card">
+          <h3>Day ${day.day}: ${escapeHtml(day.title)}</h3>
+          <p class="meta"><strong>Travel time:</strong> ${escapeHtml(day.drivingTime)}<br /><strong>Overnight:</strong> ${escapeHtml(day.overnight)}</p>
+          <p>${escapeHtml(day.details)}</p>
+          ${day.highlights?.length ? `<ul>${day.highlights.map((highlight) => `<li>${escapeHtml(highlight)}</li>`).join('')}</ul>` : ''}
+        </section>
+      `
+    )
+    .join('');
+
+  const localTips = plan.localTips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join('');
+  const safetyNotes = plan.safetyNotes.map((note) => `<li>${escapeHtml(note)}</li>`).join('');
+
+  return `<!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>${escapeHtml(plan.tripTitle)}</title>
+      <style>
+        body { font-family: Arial, sans-serif; color: #0f172a; margin: 0; padding: 32px; background: #f8fafc; }
+        .sheet { max-width: 920px; margin: 0 auto; background: white; padding: 36px; border-radius: 24px; }
+        h1 { margin: 0 0 8px; color: #003d5b; font-size: 32px; }
+        h2 { margin: 32px 0 12px; color: #0f6e56; font-size: 20px; }
+        h3 { margin: 0 0 10px; color: #003d5b; font-size: 18px; }
+        p { line-height: 1.6; margin: 0 0 12px; }
+        ul { margin: 0; padding-left: 20px; line-height: 1.6; }
+        .summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; }
+        .day-card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 20px; margin-bottom: 16px; }
+        .meta { color: #475569; }
+        @media print {
+          body { background: white; padding: 0; }
+          .sheet { max-width: none; margin: 0; padding: 0; border-radius: 0; }
+          .day-card, .card, .summary { break-inside: avoid; }
+        }
+      </style>
+    </head>
+    <body>
+      <main class="sheet">
+        <h1>${escapeHtml(plan.tripTitle)}</h1>
+        <p>${escapeHtml(`${plan.duration}-day trip · ${plan.destination}`)}</p>
+        <div class="summary">
+          <p>${escapeHtml(plan.summary)}</p>
+        </div>
+        <div class="grid" style="margin-top: 20px;">
+          <section class="card">
+            <h2>Budget Summary</h2>
+            <p>${escapeHtml(plan.budgetSummary)}</p>
+            <p><strong>Total:</strong> ${plan.budgetBreakdown.total.toLocaleString('en-PK')} ${escapeHtml(plan.budgetBreakdown.currency)}</p>
+          </section>
+          <section class="card">
+            <h2>Transport Plan</h2>
+            <p>${escapeHtml(plan.transportPlan)}</p>
+          </section>
+        </div>
+        <section>
+          <h2>Daily Itinerary</h2>
+          ${days}
+        </section>
+        <div class="grid">
+          <section class="card">
+            <h2>Local Tips</h2>
+            <ul>${localTips}</ul>
+          </section>
+          <section class="card">
+            <h2>Safety Notes</h2>
+            <ul>${safetyNotes}</ul>
+          </section>
+        </div>
+      </main>
+    </body>
+  </html>`;
+}
+
 function PlannerPageContent() {
-  const { user, loginWithGoogle } = useAuth();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   
@@ -135,6 +223,7 @@ function PlannerPageContent() {
   const [presetLabel, setPresetLabel] = useState<string | null>(null);
   const [plan, setPlan] = useState<TravelPlannerOutput | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,9 +253,9 @@ function PlannerPageContent() {
       setHasSaved(true);
       toast({
         title: "Trip Saved!",
-        description: "You can find your saved trips in the 'My Trips' section.",
+        description: "Your trip has been saved to your account.",
       });
-    } catch (err) {
+    } catch {
       toast({
         title: "Save Failed",
         description: "Could not save your trip. Please try again.",
@@ -174,6 +263,45 @@ function PlannerPageContent() {
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
+
+    if (!plan) return;
+
+    try {
+      setIsDownloading(true);
+      const popup = window.open('', '_blank', 'width=960,height=900');
+      if (!popup) {
+        throw new Error('Popup blocked');
+      }
+
+      popup.document.open();
+      popup.document.write(buildPlanPrintHtml(plan));
+      popup.document.close();
+      popup.focus();
+
+      setTimeout(() => {
+        popup.print();
+      }, 300);
+
+      toast({
+        title: "PDF Ready",
+        description: "The print dialog is open. Choose 'Save as PDF' to download it to your device.",
+      });
+    } catch {
+      toast({
+        title: "PDF Failed",
+        description: "Could not open the PDF export. Please allow popups and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -310,6 +438,7 @@ function PlannerPageContent() {
       try {
         setError(null);
         setPlan(null);
+        setHasSaved(false);
         const result = await getTravelPlan({
           promptString,
           duration: data.duration,
@@ -821,23 +950,49 @@ function PlannerPageContent() {
                           {plan.duration}-day trip{' \u00b7 '}{plan.destination}
                         </CardDescription>
                       </div>
-                      <Button
-                        onClick={handleSaveTrip}
-                        disabled={isSaving || hasSaved}
-                        className={cn(
-                          "rounded-full gap-2 transition-all",
-                          hasSaved ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100" : "bg-primary text-white"
-                        )}
-                        variant={hasSaved ? "outline" : "default"}
-                      >
-                        {isSaving ? (
-                          <Loader className="h-4 w-4 animate-spin" />
-                        ) : hasSaved ? (
-                          <>&#10003; Saved</>
+                      <div className="flex flex-wrap gap-2">
+                        {!user ? (
+                          <Button onClick={() => setIsAuthDialogOpen(true)} className="rounded-full bg-primary text-white">
+                            Login to Save
+                          </Button>
                         ) : (
-                          <>Save Trip</>
+                          <>
+                            <Button
+                              onClick={handleDownloadPdf}
+                              disabled={isDownloading}
+                              variant="outline"
+                              className="rounded-full gap-2 border-primary/20 bg-white"
+                            >
+                              {isDownloading ? (
+                                <Loader className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Download className="h-4 w-4" />
+                              )}
+                              Download PDF
+                            </Button>
+                            <Button
+                              onClick={handleSaveTrip}
+                              disabled={isSaving || hasSaved}
+                              className={cn(
+                                "rounded-full gap-2 transition-all",
+                                hasSaved ? "bg-green-100 text-green-700 border-green-200 hover:bg-green-100" : "bg-primary text-white"
+                              )}
+                              variant={hasSaved ? "outline" : "default"}
+                            >
+                              {isSaving ? (
+                                <Loader className="h-4 w-4 animate-spin" />
+                              ) : hasSaved ? (
+                                <>&#10003; Saved</>
+                              ) : (
+                                <>
+                                  <Save className="h-4 w-4" />
+                                  Save to Account
+                                </>
+                              )}
+                            </Button>
+                          </>
                         )}
-                      </Button>
+                      </div>
                     </div>
                     {plan.summary && (
                       <p className="mt-4 rounded-xl bg-background border border-border p-4 text-sm text-foreground/90 leading-relaxed shadow-sm">

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, ShieldCheck, LogIn, Users
+  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, LogIn, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -20,8 +20,8 @@ const primaryNavLinks = [
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
-  { href: '/partners', label: 'Partners', icon: Users },
   { href: '/about', label: 'About', icon: Info },
+  { href: '/partners', label: 'Partners', icon: Users },
 ];
 
 const utilityLinks: { href: string; label: string; icon?: any }[] = [];
@@ -41,12 +41,6 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navLinks = [
-    ...primaryNavLinks,
-    ...(user ? [{ href: '/saved-trips', label: 'My Trips', icon: ImageIcon }] : []),
-  ];
-
   return (
     <header
       className={cn(
@@ -54,7 +48,7 @@ export default function Header() {
       )}
     >
       <div className={cn(
-        "container mx-auto rounded-3xl transition-all duration-500 border overflow-hidden shadow-2xl ",
+        "container mx-auto rounded-3xl transition-all duration-500 border overflow-visible shadow-2xl ",
         isScrolled
           ? "bg-[#003D5B]/85 backdrop-blur-xl border-white/20 h-16"
           : isHomePage
@@ -80,7 +74,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-6">
             <nav className="flex items-center gap-0">
-              {navLinks.map((link) => (
+              {primaryNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -100,16 +94,20 @@ export default function Header() {
 
             <div className="flex items-center gap-2">
               {user ? (
-                <div className="relative">
+                <div className="group relative">
                   <button
                     aria-label="User menu"
                     className={cn(
-                      "flex items-center gap-2 rounded-full px-3 py-1 text-sm focus:outline-none",
-                      isScrolled ? 'text-white' : isHomePage ? 'text-white' : 'text-[#003D5B]'
+                      "flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-all",
+                      isScrolled
+                        ? "text-white hover:bg-white/10"
+                        : isHomePage
+                          ? "text-white hover:bg-white/10"
+                          : "text-[#003D5B] hover:bg-[#74AFDB]/15"
                     )}
                   >
                     {user.photoURL ? (
-                      <img src={user.photoURL} alt={user.displayName || 'User'} className="h-8 w-8 rounded-full" />
+                      <img src={user.photoURL} alt={user.displayName || 'User'} className="h-8 w-8 rounded-full object-cover ring-2 ring-white/20" />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-700">
                         {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
@@ -117,14 +115,47 @@ export default function Header() {
                     )}
                     <span className="hidden sm:inline">{user.displayName || user.email?.split('@')[0]}</span>
                   </button>
-                  <div className="absolute right-0 mt-2 hidden group-focus:block group-hover:block z-50">
-                    <div className={cn(
-                      'rounded-xl bg-white shadow-lg border overflow-hidden',
-                      isScrolled ? 'bg-[#042835]/95 text-white border-white/10' : 'bg-white text-slate-900 border-slate-200'
-                    )}>
-                      <nav className="flex flex-col">
-                        <Link href="/saved-trips" className="px-4 py-3 text-sm hover:bg-slate-50">My Trips</Link>
-                        <button onClick={() => logout()} className="text-left px-4 py-3 text-sm hover:bg-slate-50">Logout</button>
+                  <div className="absolute right-0 top-full z-50 hidden pt-2 group-hover:block group-focus-within:block">
+                    <div
+                      className={cn(
+                        "min-w-[190px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl",
+                        isScrolled
+                          ? "border-white/10 bg-[#042835]/95 text-white"
+                          : isHomePage
+                            ? "border-white/10 bg-[#0c2f42]/95 text-white"
+                            : "border-slate-200 bg-white/95 text-slate-900"
+                      )}
+                    >
+                      <div className="border-b border-white/10 px-4 py-3">
+                        <p className="text-sm font-semibold">{user.displayName || 'Traveler'}</p>
+                        <p className={cn("text-xs", isScrolled || isHomePage ? "text-white/65" : "text-slate-500")}>
+                          {user.email}
+                        </p>
+                      </div>
+                      <nav className="flex flex-col p-2">
+                        <Link
+                          href="/saved-trips"
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                            isScrolled || isHomePage
+                              ? "hover:bg-white/10"
+                              : "hover:bg-slate-100"
+                          )}
+                        >
+                          Saved Plans
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => logout()}
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-left text-sm font-medium transition-colors",
+                            isScrolled || isHomePage
+                              ? "hover:bg-white/10 hover:text-red-300"
+                              : "hover:bg-red-50 hover:text-red-600"
+                          )}
+                        >
+                          Logout
+                        </button>
                       </nav>
                     </div>
                   </div>
@@ -357,16 +388,29 @@ export default function Header() {
                         </SheetClose>
                       )}
                       {user && (
-                        <Button
-                          onClick={() => logout()}
-                          variant="ghost"
-                          className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-red-400 active:scale-95 group"
-                        >
-                          <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-red-500/20 transition-colors">
-                            <LogIn className="h-5 w-5 text-slate-500 group-hover:text-red-400 transition-colors" />
-                          </div>
-                          Logout
-                        </Button>
+                        <>
+                          <SheetClose asChild>
+                            <Link
+                              href="/saved-trips"
+                              className="w-full flex items-center justify-start gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                            >
+                              <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
+                                <ImageIcon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+                              </div>
+                              Saved Plans
+                            </Link>
+                          </SheetClose>
+                          <Button
+                            onClick={() => logout()}
+                            variant="ghost"
+                            className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-red-400 active:scale-95 group"
+                          >
+                            <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-red-500/20 transition-colors">
+                              <LogIn className="h-5 w-5 text-slate-500 group-hover:text-red-400 transition-colors" />
+                            </div>
+                            Logout
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>

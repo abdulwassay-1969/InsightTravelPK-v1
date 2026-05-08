@@ -10,6 +10,8 @@ import { upload } from '@imagekit/javascript';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/components/auth-context';
+import { AuthDialog } from '@/components/auth-dialog';
 import {
   savePhoto, getAllPhotos, deletePhoto,
   type TravelerPhoto
@@ -56,6 +58,25 @@ const DEFAULT_PHOTOS: TravelerPhoto[] = [
   },
 ];
 
+function formatUploadError(stage: 'auth' | 'imagekit' | 'firestore', err: unknown) {
+  const message =
+    err instanceof Error
+      ? err.message
+      : typeof err === 'string'
+        ? err
+        : 'Unknown upload error.';
+
+  if (stage === 'auth') {
+    return `ImageKit auth failed: ${message}`;
+  }
+
+  if (stage === 'imagekit') {
+    return `ImageKit upload failed: ${message}`;
+  }
+
+  return `Firestore save failed: ${message}`;
+}
+
 function restoreFocusToOpener(
   returnFocusRef: RefObject<HTMLElement | null>,
   fallback: HTMLElement | null
@@ -75,10 +96,12 @@ function UploadModal({
   onClose,
   onUploaded,
   returnFocusRef,
+  currentUserId,
 }: {
   onClose: () => void;
   onUploaded: () => void;
   returnFocusRef: RefObject<HTMLElement | null>;
+  currentUserId: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -116,41 +139,65 @@ function UploadModal({
     setLoading(true);
     try {
       // 1. Fetch authentication tokens from our own server
+      let token: string;
+      let signature: string;
+      let expire: number;
       const authResponse = await fetch('/api/imagekit-auth');
-      if (!authResponse.ok) throw new Error("Failed to get upload authorization.");
-      const { token, signature, expire } = await authResponse.json();
+      if (!authResponse.ok) {
+        const details = await authResponse.json().catch(() => null);
+        throw new Error(details?.error || `Authorization endpoint returned ${authResponse.status}.`);
+      }
+      ({ token, signature, expire } = await authResponse.json());
 
       // 2. Upload DIRECTLY to ImageKit from browser
-      const uploadResponse = await upload({
-        publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
-        file: preview,
-        fileName: `photo-${Date.now()}`,
-        folder: "/gallery",
-        token,
-        signature,
-        expire
-      });
+      let uploadResponse;
+      try {
+        uploadResponse = await upload({
+          publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
+          file: preview,
+          fileName: `photo-${Date.now()}`,
+          folder: "/gallery",
+          token,
+          signature,
+          expire
+        });
+      } catch (err) {
+        throw new Error(formatUploadError('imagekit', err));
+      }
 
       if (!uploadResponse.url || !uploadResponse.fileId) {
         throw new Error("Upload completed without a valid ImageKit asset reference.");
       }
 
       // 3. Save only URL and Metadata to Firestore
-      await savePhoto({
-        name: form.name.trim(),
-        location: form.location.trim(),
-        caption: form.caption.trim(),
-        url: uploadResponse.url,
-        fileId: uploadResponse.fileId,
-        uploadedAt: new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }),
-        fileSize: fileInfo?.size ?? 0,
-      });
+      try {
+        await savePhoto({
+          name: form.name.trim(),
+          location: form.location.trim(),
+          caption: form.caption.trim(),
+          url: uploadResponse.url,
+          fileId: uploadResponse.fileId,
+          uploadedAt: new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }),
+          fileSize: fileInfo?.size ?? 0,
+          userId: currentUserId,
+        });
+      } catch (err) {
+        throw new Error(formatUploadError('firestore', err));
+      }
 
       onUploaded();
       onClose();
     } catch (err: any) {
       console.error("Upload process failed:", err);
-      setError(err.message || 'Failed to save photo. Please try again.');
+      if (String(err?.message || "").includes("Authorization endpoint")) {
+        setError(formatUploadError('auth', err));
+      } else if (String(err?.message || "").startsWith("ImageKit upload failed:")) {
+        setError(err.message);
+      } else if (String(err?.message || "").startsWith("Firestore save failed:")) {
+        setError(err.message);
+      } else {
+        setError(err.message || 'Failed to save photo. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -317,6 +364,7 @@ function Lightbox({
   onNext,
   onDelete,
   returnFocusRef,
+  currentUserId,
 }: {
   photos: TravelerPhoto[];
   index: number;
@@ -325,9 +373,11 @@ function Lightbox({
   onNext: () => void;
   onDelete: (id: string, storagePath?: string) => void;
   returnFocusRef: RefObject<HTMLElement | null>;
+  currentUserId?: string;
 }) {
   const photo = photos[index];
   const isSeeded = photo.id.startsWith('seed-');
+  const canDelete = !isSeeded && !!photo.userId && photo.userId === currentUserId;
   const containerRef = useRef<HTMLDivElement>(null);
   const fallbackFocusRef = useRef<HTMLElement | null>(null);
 
@@ -408,7 +458,7 @@ function Lightbox({
           <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{photo.location}</span>
           <span>{photo.uploadedAt}</span>
         </div>
-        {!isSeeded && (
+        {canDelete && (
           <button
             onClick={() => { onDelete(photo.id, photo.storagePath); onClose(); }}
             className="mt-3 text-red-400 hover:text-red-300 flex items-center gap-1 mx-auto text-sm transition-colors"
@@ -424,11 +474,22 @@ function Lightbox({
 
 // ─── Main Gallery Section ──────────────────────────────────────────────────
 export default function VisualGallerySection() {
+  const { user } = useAuth();
   const [photos, setPhotos] = useState<TravelerPhoto[]>(DEFAULT_PHOTOS);
   const [showUpload, setShowUpload] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [lightbox, setLightbox] = useState<number | null>(null);
   const uploadReturnFocusRef = useRef<HTMLElement | null>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
+
+  const openUploadFlow = (trigger: HTMLElement) => {
+    uploadReturnFocusRef.current = trigger;
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
+    setShowUpload(true);
+  };
 
   const loadPhotos = useCallback(async () => {
     try {
@@ -456,6 +517,7 @@ export default function VisualGallerySection() {
     >
       <section className="py-20 md:py-32 bg-stone-50">
       <div className="container mx-auto px-4 md:px-8">
+        <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row animate-fade-in-up items-center justify-between gap-6 mb-16">
@@ -474,8 +536,7 @@ export default function VisualGallerySection() {
           </div>
           <Button
             onClick={(e) => {
-              uploadReturnFocusRef.current = e.currentTarget;
-              setShowUpload(true);
+              openUploadFlow(e.currentTarget);
             }}
             size="lg"
             className="gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 rounded-full h-14 px-8 text-lg shrink-0 transition-all font-bold"
@@ -535,8 +596,7 @@ export default function VisualGallerySection() {
             <Button
               variant="outline"
               onClick={(e) => {
-                uploadReturnFocusRef.current = e.currentTarget;
-                setShowUpload(true);
+                openUploadFlow(e.currentTarget);
               }}
               className="gap-2 border-primary text-primary hover:bg-primary/10"
             >
@@ -553,6 +613,7 @@ export default function VisualGallerySection() {
           onClose={() => setShowUpload(false)}
           onUploaded={loadPhotos}
           returnFocusRef={uploadReturnFocusRef}
+          currentUserId={user!.uid}
         />
       )}
 
@@ -566,6 +627,7 @@ export default function VisualGallerySection() {
           onNext={() => setLightbox((lightbox + 1) % allPhotos.length)}
           onDelete={handleDelete}
           returnFocusRef={lightboxReturnFocusRef}
+          currentUserId={user?.uid}
         />
       )}
       </section>
