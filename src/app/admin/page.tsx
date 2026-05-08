@@ -299,6 +299,9 @@ export default function AdminPage() {
           <div>
             <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Admin Control Panel</h2>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{title}</p>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              Review partner applications first, then keep suppliers, routes, and permits in sync.
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

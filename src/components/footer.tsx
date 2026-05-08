@@ -43,19 +43,19 @@ export default function Footer() {
             <p className="text-slate-400 mb-8 leading-relaxed">
               Your ultimate guide to discovering the untold beauty, rich culture, and breathtaking landscapes of Pakistan. Let the adventure begin.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+            <div className="flex gap-4" aria-label="Social links coming soon">
+              <button type="button" disabled title="Coming soon" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center opacity-70 cursor-not-allowed">
                 <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+              </button>
+              <button type="button" disabled title="Coming soon" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center opacity-70 cursor-not-allowed">
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+              </button>
+              <button type="button" disabled title="Coming soon" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center opacity-70 cursor-not-allowed">
                 <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+              </button>
+              <button type="button" disabled title="Coming soon" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center opacity-70 cursor-not-allowed">
                 <Youtube className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -91,16 +91,17 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-6 tracking-wide">Stay Inspired</h3>
             <p className="text-slate-400 mb-6 font-medium">
-              Subscribe to our newsletter for travel tips, hidden gems, and exclusive itineraries.
+              Newsletter signup is coming soon. For now, use the planner and destination pages to start your trip.
             </p>
             <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
               <Input 
                 type="email" 
                 placeholder="Your email address" 
-                className="bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 h-12 focus-visible:ring-primary"
+                disabled
+                className="bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 h-12 focus-visible:ring-primary opacity-70 cursor-not-allowed"
               />
-              <Button type="submit" className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-white font-bold">
-                Subscribe <Send className="w-4 h-4" />
+              <Button type="submit" disabled className="w-full h-12 gap-2 bg-primary/70 text-white font-bold cursor-not-allowed">
+                Coming Soon <Send className="w-4 h-4" />
               </Button>
             </form>
           </div>
@@ -110,7 +111,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-slate-800/60 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-slate-500">
           <p>© {new Date().getFullYear()} InsightTravelPK. Crafted with love for Pakistan.</p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>

@@ -155,11 +155,11 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
                 Ready to explore {district.name}? Find the best deals on hotels, flights, and rental cars to make your journey unforgettable.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
-                <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <a href="#" target="_blank" rel="noopener noreferrer">🏨 Book Hotels</a>
+                <Button size="lg" disabled className="bg-blue-600/70 text-white cursor-not-allowed">
+                  🏨 Hotel Booking Coming Soon
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10">
-                  <a href="#" target="_blank" rel="noopener noreferrer">✈️ Find Flights</a>
+                <Button size="lg" variant="outline" disabled className="border-primary text-primary cursor-not-allowed opacity-70">
+                  ✈️ Flight Search Coming Soon
                 </Button>
               </div>
             </section>

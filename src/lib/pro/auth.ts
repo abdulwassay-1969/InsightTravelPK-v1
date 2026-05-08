@@ -16,7 +16,16 @@ export const PRO_ADMIN_CREDENTIALS = {
 } as const;
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET || "fallback_insighttravelpk_jwt_secret_dev_only";
+  const secret = process.env.JWT_SECRET?.trim();
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET is missing. Set it before starting the production server.");
+    }
+
+    console.warn("JWT_SECRET is missing. Using a development-only fallback secret.");
+    return new TextEncoder().encode("fallback_insighttravelpk_jwt_secret_dev_only");
+  }
+
   return new TextEncoder().encode(secret);
 };
 

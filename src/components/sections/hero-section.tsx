@@ -27,12 +27,15 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
       
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-6">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] backdrop-blur-md">
+          Pakistan Travel Guide
+        </div>
         <h1 className="text-5xl font-extrabold tracking-tight md:text-7xl lg:text-8xl font-headline animate-fade-in-up drop-shadow-xl">
           Discover the <span className="text-accent">Untold Beauty</span><br />
           of Pakistan
         </h1>
         <p className="mt-6 max-w-3xl text-lg md:text-2xl text-neutral-200 animate-fade-in-up animation-delay-300 drop-shadow-md font-medium">
-          Explore the breathtaking mountains, serene lakes, and vibrant cultures. Your next adventure awaits.
+          Start with a province, open a district, and build a trip you can save in minutes.
         </p>
         
         <div className="mt-10 flex flex-col sm:flex-row gap-5 animate-fade-in-up animation-delay-600">
@@ -40,7 +43,7 @@ export default function HeroSection() {
             <a href="#provinces">Explore Provinces</a>
           </Button>
           <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/40 text-white hover:bg-white hover:text-primary h-14 px-8 text-lg rounded-full transition-transform active:scale-95">
-            <a href="/gallery">View Gallery</a>
+            <a href="/planner">Start Planning</a>
           </Button>
         </div>
       </div>

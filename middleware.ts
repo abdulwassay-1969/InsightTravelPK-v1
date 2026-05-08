@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { PRO_ROLE_COOKIE, PRO_SESSION_COOKIE, verifyToken } from "@/lib/pro/auth";
+import { PRO_SESSION_COOKIE, verifyToken } from "@/lib/pro/auth";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -47,7 +47,6 @@ function redirectUnauthenticated(request: NextRequest, pathname: string) {
   loginUrl.searchParams.set("from", pathname);
   const response = NextResponse.redirect(loginUrl);
   response.cookies.delete(PRO_SESSION_COOKIE);
-  response.cookies.delete(PRO_ROLE_COOKIE);
   return response;
 }
 

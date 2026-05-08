@@ -54,6 +54,7 @@ export default function AdminLoginPage() {
       switchText="Use agency login"
       credentialTitle="Admin credentials"
       credentialText={`${PRO_ADMIN_CREDENTIALS.email} / ${PRO_ADMIN_CREDENTIALS.password}`}
+      credentialNote="Demo access only. Gate this behind production auth before shipping publicly."
       stats={[
         { label: "Queue", value: "12" },
         { label: "Routes", value: "44" },

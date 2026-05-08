@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Loader, MapPin, Calendar, Trash2, Eye, Compass } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { AuthDialog } from '@/components/auth-dialog';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ export function MyTrips() {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTrip, setSelectedTrip] = useState<SavedTrip | null>(null);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const fetchTrips = async () => {
@@ -69,6 +71,8 @@ export function MyTrips() {
 
   if (!user) {
     return (
+      <>
+      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
       <Card className="bg-amber-50 border-amber-200 p-8 text-center max-w-2xl mx-auto mt-10">
         <Compass className="h-12 w-12 text-amber-500 mx-auto mb-4" />
         <CardTitle className="text-amber-900">Login to See Your Trips</CardTitle>
@@ -76,12 +80,19 @@ export function MyTrips() {
           Your personalized AI-generated travel plans are stored securely in your account. 
           Login with Google to access them anytime.
         </CardDescription>
-        <div className="mt-6">
-          <Button asChild className="bg-amber-600 hover:bg-amber-700 text-white">
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Button onClick={() => setIsAuthDialogOpen(true)} className="bg-amber-600 hover:bg-amber-700 text-white">
+            Log In With Google
+          </Button>
+          <Button asChild variant="outline" className="border-amber-300 text-amber-900 hover:bg-amber-100">
+            <Link href="/planner">Open Planner</Link>
+          </Button>
+          <Button asChild variant="ghost" className="text-amber-900 hover:bg-amber-100">
             <Link href="/">Back to Home</Link>
           </Button>
         </div>
       </Card>
+      </>
     );
   }
 

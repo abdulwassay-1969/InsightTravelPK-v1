@@ -33,7 +33,7 @@ export default async function ProDashboardPage() {
           Dashboard Overview
         </h2>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Snapshot of supplier readiness, route conditions, and permit requirements.
+          Start with verified suppliers, then move to routes and permits before publishing anything new.
         </p>
       </div>
 

@@ -20,6 +20,7 @@ type TravelLoginShellProps = {
   switchText: string;
   credentialTitle: string;
   credentialText: string;
+  credentialNote?: string;
   stats: Array<{ label: string; value: string }>;
   children: ReactNode;
 };
@@ -39,6 +40,7 @@ export default function TravelLoginShell({
   switchText,
   credentialTitle,
   credentialText,
+  credentialNote,
   stats,
   children,
 }: TravelLoginShellProps) {
@@ -162,6 +164,7 @@ export default function TravelLoginShell({
             <div className="relative mt-8 rounded-[1.6rem] border border-white/80 bg-[linear-gradient(180deg,rgba(247,250,251,0.96),rgba(255,255,255,0.9))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">{credentialTitle}</p>
               <p className="mt-3 text-sm font-medium text-slate-700">{credentialText}</p>
+              {credentialNote ? <p className="mt-2 text-xs text-slate-500">{credentialNote}</p> : null}
             </div>
           </div>
         </section>

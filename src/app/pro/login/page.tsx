@@ -54,6 +54,7 @@ export default function ProLoginPage() {
       switchText="Use admin login"
       credentialTitle="Agency demo credentials"
       credentialText={`${PRO_DEMO_CREDENTIALS.email} / ${PRO_DEMO_CREDENTIALS.password}`}
+      credentialNote="Demo access only. Replace these credentials with real agency accounts before launch."
       stats={[
         { label: "Regions", value: "08" },
         { label: "Partners", value: "214" },

@@ -12,15 +12,12 @@ const firebaseConfig = {
   measurementId: (process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "").trim(),
 };
 
-// Safety Check: Ensure the critical keys exist
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  const missing = [];
-  if (!firebaseConfig.apiKey) missing.push("API_KEY");
-  if (!firebaseConfig.projectId) missing.push("PROJECT_ID");
-  console.error(`❌ CRITICAL ERROR: Firebase ${missing.join(" and ")} missing.`, {
-    usingProjectId: firebaseConfig.projectId || "UNDEFINED",
-    envValue: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-  });
+const missing = [];
+if (!firebaseConfig.apiKey) missing.push("NEXT_PUBLIC_FIREBASE_API_KEY");
+if (!firebaseConfig.projectId) missing.push("NEXT_PUBLIC_FIREBASE_PROJECT_ID");
+
+if (missing.length > 0) {
+  throw new Error(`Firebase configuration is missing: ${missing.join(", ")}. Set the required env vars before running the app.`);
 }
 
 // Initialize Firebase only once

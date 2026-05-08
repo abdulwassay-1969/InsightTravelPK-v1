@@ -3,7 +3,6 @@
 import { cookies } from "next/headers";
 import { 
   PRO_SESSION_COOKIE, 
-  PRO_ROLE_COOKIE, 
   isValidAdminLogin, 
   isValidAgentLogin, 
   resolveRoleForEmail, 
@@ -33,29 +32,23 @@ export async function loginAction(formData: FormData) {
     return { error: `Invalid ${type} credentials.` };
   }
 
-  const role = resolveRoleForEmail(email);
+  try {
+    const role = resolveRoleForEmail(email);
+    const token = await createToken({ email, role, sessionType: "pro" });
 
-  // Create JWT instead of plain text string
-  const token = await createToken({ email, role, sessionType: "pro" });
+    const cookieStore = await cookies();
 
-  const cookieStore = await cookies();
-  
-  cookieStore.set(PRO_SESSION_COOKIE, token, {
-    path: "/",
-    maxAge: 86400, // 24 hours
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax"
-  });
+    cookieStore.set(PRO_SESSION_COOKIE, token, {
+      path: "/",
+      maxAge: 86400,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax"
+    });
 
-  // We still keep role cookie for easy client-side UI toggles, but NEVER trust it for auth
-  cookieStore.set(PRO_ROLE_COOKIE, role, {
-    path: "/",
-    maxAge: 86400,
-    httpOnly: false, // Accessible by client JS if needed for UI, but not trusted by middleware
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax"
-  });
-
-  return { success: true, role };
+    return { success: true, role };
+  } catch (error) {
+    console.error("Login session setup failed:", error);
+    return { error: "Login succeeded, but session setup failed. Check JWT_SECRET and server cookies." };
+  }
 }

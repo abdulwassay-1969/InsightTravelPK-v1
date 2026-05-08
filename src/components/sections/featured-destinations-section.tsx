@@ -53,7 +53,7 @@ export default function FeaturedDestinationsSection() {
   }, [api]);
 
   return (
-    <section className="py-20 md:py-32 bg-white">
+    <section id="destinations" className="py-20 md:py-32 bg-white">
       <div className="container mx-auto px-4">
         <div className="mb-16 text-center">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 font-headline md:text-5xl">

@@ -17,6 +17,8 @@ import { cities } from '@/lib/data';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+const quickCities = ['Islamabad', 'Lahore', 'Karachi', 'Skardu', 'Hunza'];
+
 const iconMap: { [key: string]: React.ElementType } = {
   'clear-day': Sun,
   'clear-night': Sun, 
@@ -67,6 +69,16 @@ export default function WeatherPage() {
         setError(e.message || 'An error occurred while fetching weather data.');
       }
     });
+  };
+
+  const handleQuickCity = (city: string) => {
+    form.setValue('city', city);
+    setOpen(false);
+    onSubmit({ city });
+  };
+
+  const handleRetry = () => {
+    onSubmit(form.getValues());
   };
 
   useEffect(() => {
@@ -165,18 +177,39 @@ export default function WeatherPage() {
           )}
 
           {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertTitle>Weather Service Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <div className="space-y-4 mb-6">
+              <Alert variant="destructive">
+                <AlertTitle>Weather Service Error</AlertTitle>
+                <AlertDescription>
+                  {error} Try one of the popular cities below or retry the current selection.
+                </AlertDescription>
+              </Alert>
+              <div className="flex flex-wrap gap-2">
+                {quickCities.map((city) => (
+                  <Button key={city} type="button" variant="outline" size="sm" onClick={() => handleQuickCity(city)}>
+                    {city}
+                  </Button>
+                ))}
+                <Button type="button" variant="secondary" size="sm" onClick={handleRetry}>
+                  Retry current city
+                </Button>
+              </div>
+            </div>
           )}
 
           {!isPending && !weatherData && !error && (
             <Card className="text-center py-12">
                <CardContent className="flex flex-col items-center justify-center">
                    <Sun className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                   <h3 className="text-xl font-semibold text-foreground">No Weather Data</h3>
-                   <p className="text-muted-foreground mt-2 max-w-sm">We couldn't retrieve the forecast. Please verify the API status or try another city.</p>
+                   <h3 className="text-xl font-semibold text-foreground">Pick a city to begin</h3>
+                   <p className="text-muted-foreground mt-2 max-w-sm">Use the search above or start with one of the popular cities below.</p>
+                   <div className="mt-6 flex flex-wrap justify-center gap-2">
+                     {quickCities.map((city) => (
+                       <Button key={city} type="button" variant="outline" size="sm" onClick={() => handleQuickCity(city)}>
+                         {city}
+                       </Button>
+                     ))}
+                   </div>
                </CardContent>
             </Card>
           )}

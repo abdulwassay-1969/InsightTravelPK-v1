@@ -225,7 +225,7 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[85%] sm:max-w-xs bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 p-0 text-white">
+              <SheetContent title="Navigation menu" side="right" className="w-[85%] sm:max-w-xs bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 p-0 text-white">
                 <div className="flex flex-col h-full">
                   <div className="p-8 border-b border-white/10">
                     <Link href="/" className="flex items-center gap-3">

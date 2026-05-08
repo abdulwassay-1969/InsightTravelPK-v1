@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth-context";
 import { LogIn } from "lucide-react";
+import { useState } from "react";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -19,10 +20,17 @@ interface AuthDialogProps {
 
 export function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
   const { loginWithGoogle } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   const handleGoogleLogin = async () => {
-    await loginWithGoogle();
-    onClose();
+    setError(null);
+    try {
+      await loginWithGoogle();
+      onClose();
+    } catch (e) {
+      console.error("Google login failed:", e);
+      setError("Google sign-in failed. Check pop-up permissions and Firebase auth settings.");
+    }
   };
 
   return (
@@ -37,6 +45,11 @@ export function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
             Login to save your AI-generated travel plans and access them anytime.
           </DialogDescription>
         </DialogHeader>
+        {error ? (
+          <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </p>
+        ) : null}
         <div className="mt-8 space-y-4">
           <Button 
             onClick={handleGoogleLogin}

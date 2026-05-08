@@ -352,8 +352,11 @@ function PlannerPageContent() {
                   AI Smart Travel Planner
                 </CardTitle>
                 <CardDescription className="text-lg text-muted-foreground mt-2">
-                  Let our AI craft the perfect Pakistani adventure for you.
+                  Plan in three clear steps: where, who, and vibe. Then let the AI draft the trip.
                 </CardDescription>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Tip: start with a destination chip, then refine the dates, budget, and interests.
+                </p>
                 
                 {/* Progress Indicator */}
                 <div className="flex items-center justify-center mt-8 max-w-md mx-auto w-full px-4">
@@ -372,7 +375,7 @@ function PlannerPageContent() {
                           currentStep > step ? 'text-[#0F6E56]' :
                           'text-muted-foreground'
                         }`}>
-                          {step === 1 ? 'Where' : step === 2 ? 'Who' : 'Vibe'}
+                          {step === 1 ? 'Where to go' : step === 2 ? 'Who is going' : 'Budget & vibe'}
                         </span>
                       </div>
                       {idx < 2 && (
@@ -543,7 +546,7 @@ function PlannerPageContent() {
 
                       <div className="flex justify-end mt-8 border-t border-border pt-6">
                         <Button type="button" onClick={checkNextStep1} className="bg-[#0F6E56] hover:bg-[#0b5341] text-white h-11 px-6 rounded-lg font-semibold">
-                          Next: Who's coming? &rarr;
+                          Next: Who's going? &rarr;
                         </Button>
                       </div>
                     </div>
@@ -643,7 +646,7 @@ function PlannerPageContent() {
                           &larr; Back
                         </Button>
                         <Button type="button" onClick={checkNextStep2} className="bg-[#0F6E56] hover:bg-[#0b5341] text-white h-11 px-6 rounded-lg font-semibold">
-                          Next: Pick your vibe &rarr;
+                          Next: Budget & interests &rarr;
                         </Button>
                       </div>
                     </div>

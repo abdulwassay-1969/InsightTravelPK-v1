@@ -3,24 +3,31 @@ import ImageKit from "imagekit";
 // Server-side instance (for deletions and auth generation)
 let imagekitInstance: ImageKit | null = null;
 
+function requireImageKitConfig() {
+  const publicKey = (process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "").trim();
+  const privateKey = (process.env.IMAGEKIT_PRIVATE_KEY || "").trim();
+  const urlEndpoint = (process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "").trim();
+
+  const missing = [];
+  if (!publicKey) missing.push("NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY");
+  if (!privateKey) missing.push("IMAGEKIT_PRIVATE_KEY");
+  if (!urlEndpoint) missing.push("NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT");
+
+  if (missing.length > 0) {
+    throw new Error(`ImageKit configuration is missing: ${missing.join(", ")}`);
+  }
+
+  return { publicKey, privateKey, urlEndpoint };
+}
+
 export const getImageKit = () => {
   if (!imagekitInstance) {
-    const publicKey = (process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "").trim();
-    const privateKey = (process.env.IMAGEKIT_PRIVATE_KEY || "").trim();
-    const urlEndpoint = (process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "").trim();
-
-    if (!publicKey || !privateKey || !urlEndpoint) {
-      const missing = [];
-      if (!publicKey) missing.push("Public Key");
-      if (!privateKey) missing.push("Private Key");
-      if (!urlEndpoint) missing.push("URL Endpoint");
-      console.error(`❌ ImageKit server config missing: ${missing.join(", ")}`);
-    }
+    const { publicKey, privateKey, urlEndpoint } = requireImageKitConfig();
 
     imagekitInstance = new ImageKit({
-      publicKey: publicKey || "missing",
-      privateKey: privateKey || "missing",
-      urlEndpoint: urlEndpoint || "missing",
+      publicKey,
+      privateKey,
+      urlEndpoint,
     });
   }
   return imagekitInstance;
