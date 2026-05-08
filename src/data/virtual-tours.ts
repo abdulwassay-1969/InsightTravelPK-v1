@@ -6,6 +6,7 @@ export interface VirtualTourLocation {
   imageUrl: string;
   youtubeId?: string; // Interactive 360° Video
   description: string;
+  category?: string;
 }
 
 export const VIRTUAL_TOUR_LOCATIONS: VirtualTourLocation[] = [
