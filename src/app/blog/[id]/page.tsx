@@ -3,7 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Calendar, Clock, ArrowLeft, Tag, User, Share2, Facebook, Twitter, MessageSquare } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Tag, User, Share2, Facebook, Twitter, MessageSquare, ArrowRight } from "lucide-react";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
