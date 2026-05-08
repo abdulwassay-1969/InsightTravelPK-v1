@@ -1,16 +1,13 @@
-'use server';
-
 import { 
   collection, 
   addDoc, 
   getDocs, 
   query, 
   orderBy, 
-  deleteDoc, 
-  doc 
+  deleteDoc,
+  doc
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { getImageKit } from "./imagekit";
 
 export type TravelerPhoto = {
     id: string;           
@@ -72,9 +69,20 @@ export async function deletePhoto(id: string, fileId?: string): Promise<void> {
         // 1. Delete from Firestore
         await deleteDoc(doc(db, COLLECTION_NAME, id));
 
-        // 2. Delete from ImageKit if fileId is provided
+        // 2. Delete from ImageKit via our secure server route if fileId is provided
         if (fileId) {
-            await getImageKit().deleteFile(fileId);
+            const response = await fetch("/api/imagekit-delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ fileId }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                throw new Error(data?.error || "ImageKit deletion failed.");
+            }
         }
     } catch (e: any) {
         console.error("Failed to delete photo from ImageKit/Firestore", e);
@@ -84,4 +92,3 @@ export async function deletePhoto(id: string, fileId?: string): Promise<void> {
         throw new Error(e?.message || "Could not delete the photo.");
     }
 }
-
