@@ -9,8 +9,8 @@ import TravelLoginShell from "@/components/pro/TravelLoginShell";
 export default function ProLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState<string>(PRO_DEMO_CREDENTIALS.email);
-  const [password, setPassword] = useState<string>(PRO_DEMO_CREDENTIALS.password);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -52,9 +52,9 @@ export default function ProLoginPage() {
       switchLabel="Platform admin?"
       switchHref="/admin/login"
       switchText="Use admin login"
-      credentialTitle="Agency demo credentials"
-      credentialText={`${PRO_DEMO_CREDENTIALS.email} / ${PRO_DEMO_CREDENTIALS.password}`}
-      credentialNote="Demo access only. Replace these credentials with real agency accounts before launch."
+      credentialTitle={""}
+      credentialText={""}
+      credentialNote={""}
       stats={[
         { label: "Regions", value: "08" },
         { label: "Partners", value: "214" },

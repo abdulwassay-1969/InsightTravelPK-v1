@@ -107,16 +107,35 @@ export default function Header() {
 
             <div className="flex items-center gap-3">
               {user ? (
-                <Button 
-                  onClick={() => logout()}
-                  variant="ghost"
-                  className={cn(
-                    "rounded-full font-semibold transition-all",
-                    isScrolled ? "text-white hover:bg-white/10" : isHomePage ? "text-white hover:bg-white/20" : "text-[#003D5B] hover:bg-[#74AFDB]/15"
-                  )}
-                >
-                  Logout
-                </Button>
+                <div className="relative">
+                  <button
+                    aria-label="User menu"
+                    className={cn(
+                      "flex items-center gap-2 rounded-full px-3 py-1 text-sm focus:outline-none",
+                      isScrolled ? 'text-white' : isHomePage ? 'text-white' : 'text-[#003D5B]'
+                    )}
+                  >
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName || 'User'} className="h-8 w-8 rounded-full" />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-700">
+                        {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="hidden sm:inline">{user.displayName || user.email?.split('@')[0]}</span>
+                  </button>
+                  <div className="absolute right-0 mt-2 hidden group-focus:block group-hover:block z-50">
+                    <div className={cn(
+                      'rounded-xl bg-white shadow-lg border overflow-hidden',
+                      isScrolled ? 'bg-[#042835]/95 text-white border-white/10' : 'bg-white text-slate-900 border-slate-200'
+                    )}>
+                      <nav className="flex flex-col">
+                        <Link href="/saved-trips" className="px-4 py-3 text-sm hover:bg-slate-50">My Trips</Link>
+                        <button onClick={() => logout()} className="text-left px-4 py-3 text-sm hover:bg-slate-50">Logout</button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div
                   className={cn(
