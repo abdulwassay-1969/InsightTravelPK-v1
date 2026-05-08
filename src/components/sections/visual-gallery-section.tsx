@@ -504,8 +504,8 @@ export default function VisualGallerySection() {
 
   useEffect(() => { loadPhotos(); }, [loadPhotos]);
 
-  const handleUploadSuccess = useCallback(async () => {
-    await loadPhotos();
+  const handleUploadSuccess = useCallback(() => {
+    void loadPhotos();
     setShowUpload(false);
     toast({
       title: 'Photo uploaded',
