@@ -6,6 +6,7 @@ import {
   GeoJSON,
   LayersControl,
   MapContainer,
+  Marker,
   Polyline,
   Popup,
   ScaleControl,
@@ -13,7 +14,19 @@ import {
   Tooltip,
   useMap,
 } from "react-leaflet";
+import { Compass, Sparkles } from "lucide-react";
 import { LatLngBoundsExpression } from "leaflet";
+
+function MapResizer({ isOpen }: { isOpen: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    // Small timeout to allow container size to settle
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+  }, [isOpen, map]);
+  return null;
+}
 import L from "leaflet";
 import {
   Select,
@@ -23,8 +36,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { generateAiTourGuide } from '@/app/actions/ai-guide';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import Link from 'next/link';
+import MarkerClusterGroup from 'react-leaflet-cluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 import nationalBoundary from "@/data/national_boundary.json";
 import provincialBoundary from "@/data/provincial_boundary.json";
@@ -134,6 +154,26 @@ function getSpotKey(spot: SpotFeature, idx: number) {
 function getCategoryColor(category?: string | null) {
   if (!category) return "#2563eb";
   return CATEGORY_COLORS[category] ?? "#2563eb";
+}
+
+function createCustomIcon(category: string, isActive: boolean) {
+  const color = getCategoryColor(category);
+  return L.divIcon({
+    className: "custom-marker",
+    html: `
+      <div style="
+        width: ${isActive ? '24px' : '16px'}; 
+        height: ${isActive ? '24px' : '16px'}; 
+        background-color: ${color}; 
+        border: 2px solid white; 
+        border-radius: 50%; 
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+      "></div>
+    `,
+    iconSize: [isActive ? 24 : 16, isActive ? 24 : 16],
+    iconAnchor: [isActive ? 12 : 8, isActive ? 12 : 8],
+  });
 }
 
 function getSpotLatLng(spot: SpotFeature): [number, number] | null {
@@ -315,6 +355,9 @@ function MapTools({
   );
 }
 
+import { VirtualTourPanel } from "./virtual-tour-panel";
+import { VIRTUAL_TOUR_LOCATIONS } from "@/data/virtual-tours";
+
 export default function PakistanMap() {
   const [selectedProvince, setSelectedProvince] = useState("all");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
@@ -334,6 +377,79 @@ export default function PakistanMap() {
   const [routeError, setRouteError] = useState<string | null>(null);
   const [pickedPoint, setPickedPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [showLegend, setShowLegend] = useState(true);
+
+  // Sidebar / Accordion State
+  const [expandedAccordion, setExpandedAccordion] = useState<string[]>(["spot-details", "spots-list"]);
+  const [isTourPanelOpen, setIsTourPanelOpen] = useState(false);
+  const [tourLocation, setTourLocation] = useState<{
+    name: string;
+    coordinates: { lat: number; lng: number };
+    province: string;
+    imageUrl: string;
+    youtubeId?: string;
+  } | null>(null);
+
+  const handleSpotClick = (spot: SpotFeature, key: string) => {
+    setSelectedSpotKey(key);
+    
+    // Try to find a featured tour spot with better fuzzy matching
+    const searchName = spot.properties._key?.toLowerCase() || "";
+    const tourSpot = VIRTUAL_TOUR_LOCATIONS.find(loc => {
+      const locName = loc.name.toLowerCase();
+      return locName.includes(searchName) || searchName.includes(locName) || 
+             (searchName.includes("faisal") && locName.includes("faisal"));
+    });
+
+    const latLng = getSpotLatLng(spot);
+    const spotName = spot.properties._key || "Unknown Location";
+    const category = spot.properties.category?.toLowerCase() || "tourism";
+    
+    // Dynamic image search term
+    const CATEGORY_IMAGES: Record<string, string> = {
+      nature: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop",
+      waterfall: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?q=80&w=2000&auto=format&fit=crop",
+      historical: "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?q=80&w=2000&auto=format&fit=crop",
+      religious: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=2000&auto=format&fit=crop",
+      adventure: "https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=2000&auto=format&fit=crop",
+      cultural: "https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?q=80&w=2000&auto=format&fit=crop",
+      park: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2000&auto=format&fit=crop"
+    };
+
+    const smartFallback = CATEGORY_IMAGES[category] || CATEGORY_IMAGES["nature"];
+
+    setTourLocation({
+      name: spotName,
+      coordinates: tourSpot ? tourSpot.coordinates : (latLng ? { lat: latLng[0], lng: latLng[1] } : { lat: 30, lng: 70 }),
+      province: spot.properties.province || tourSpot?.province || "Pakistan",
+      imageUrl: tourSpot?.imageUrl || smartFallback,
+      youtubeId: tourSpot?.youtubeId
+    });
+    
+    // Auto-expand spot details and ensure it's open
+    setExpandedAccordion(["spot-details"]);
+    setIsTourPanelOpen(true);
+  };
+
+  // Sync with search params for virtual tours
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tourId = searchParams.get('tour');
+      if (tourId) {
+        const tourSpot = VIRTUAL_TOUR_LOCATIONS.find(loc => loc.id === tourId);
+        if (tourSpot) {
+          setTourLocation({
+            name: tourSpot.name,
+            coordinates: tourSpot.coordinates,
+            province: tourSpot.province,
+            imageUrl: tourSpot.imageUrl,
+            youtubeId: tourSpot.youtubeId
+          });
+          setIsTourPanelOpen(true);
+        }
+      }
+    }
+  }, []);
 
   const exportSnapshot = async (printMode: boolean) => {
     try {
@@ -620,26 +736,38 @@ export default function PakistanMap() {
     };
 
     fetchRoute();
-
     return () => controller.abort();
   }, [routeLine]);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(135deg,#00798C_0%,#30638E_55%,#003D5B_100%)] pt-24 md:pt-28 pb-8 md:pb-10">
-      <div className="container mx-auto px-4 space-y-6">
-        <div className="rounded-2xl border bg-card p-4 md:p-5 shadow-sm">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Pakistan Map Explorer</h1>
-          <p className="mt-2 text-muted-foreground">
-            Select a province to view tourism spots. Click any marker to open details for that area.
-          </p>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+    <div className="flex flex-col h-screen bg-[#0f2027] overflow-hidden">
+      {/* Top Navigation / Filter Bar */}
+      <div className="z-[1000] p-4 md:p-6 bg-[#0f2027] border-b border-white/10 shadow-2xl">
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+                <Compass className="h-8 w-8 text-teal-400 animate-spin-slow" />
+                Pakistan Map Explorer
+              </h1>
+              <p className="mt-1 text-slate-400 text-sm">
+                Discover {selectedSpots.length} curated destinations across the nation
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-teal-500 animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-teal-400">Interactive Guide Ready</span>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Select value={selectedProvince} onValueChange={setSelectedProvince}>
-              <SelectTrigger className="w-full h-11">
-                <SelectValue placeholder="Select province" />
+              <SelectTrigger className="w-full h-12 bg-white/5 border-white/10 text-white rounded-xl focus:ring-teal-500">
+                <SelectValue placeholder="All Provinces" />
               </SelectTrigger>
-              <SelectContent className="z-[1200]">
+              <SelectContent className="z-[1200] bg-[#162e39] border-white/10 text-white">
                 {PROVINCE_OPTIONS.map((province) => (
-                  <SelectItem key={province.value} value={province.value}>
+                  <SelectItem key={province.value} value={province.value} className="focus:bg-teal-600 focus:text-white">
                     {province.label}
                   </SelectItem>
                 ))}
@@ -647,603 +775,236 @@ export default function PakistanMap() {
             </Select>
 
             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-              <SelectTrigger className="w-full h-11">
-                <SelectValue placeholder="Select district" />
+              <SelectTrigger className="w-full h-12 bg-white/5 border-white/10 text-white rounded-xl focus:ring-teal-500">
+                <SelectValue placeholder="All Districts" />
               </SelectTrigger>
-              <SelectContent className="z-[1200]">
-                <SelectItem value="all">All Districts</SelectItem>
+              <SelectContent className="z-[1200] bg-[#162e39] border-white/10 text-white">
+                <SelectItem value="all" className="focus:bg-teal-600 focus:text-white">All Districts</SelectItem>
                 {districtOptions
                   .filter((district) => district !== "all")
                   .map((district) => (
-                    <SelectItem key={district} value={district}>
+                    <SelectItem key={district} value={district} className="focus:bg-teal-600 focus:text-white">
                       {district}
                     </SelectItem>
                   ))}
               </SelectContent>
             </Select>
+            
+            <div className="hidden lg:flex items-center gap-2 px-4 rounded-xl border border-white/5 bg-white/5">
+              <Sparkles className="h-4 w-4 text-teal-400" />
+              <span className="text-xs text-slate-300">Click any marker for a 360° AI Tour</span>
+            </div>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Showing <span className="font-semibold text-foreground">{selectedSpots.length}</span> spots
-          </p>
         </div>
+      </div>
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="overflow-hidden rounded-2xl border shadow-sm">
-            <MapContainer
-              center={[30.3753, 69.3451]}
-              zoom={6}
-              scrollWheelZoom
-              className="h-[56vh] md:h-[70vh] w-full"
+      {/* Main Interactive Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Map Container */}
+        <div className="flex-1 relative">
+          <MapContainer
+            center={[30.3753, 69.3451]}
+            zoom={6}
+            className="h-full w-full"
+            zoomControl={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              crossOrigin="anonymous"
+            />
+            
+            <LayersControl position="topright">
+              <LayersControl.BaseLayer checked name="OpenStreetMap">
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  crossOrigin="anonymous"
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="Topo Map">
+                <TileLayer
+                  attribution='Tiles &copy; Esri'
+                  url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+                  crossOrigin="anonymous"
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="Satellite">
+                <TileLayer
+                  attribution='Tiles &copy; Esri'
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  crossOrigin="anonymous"
+                />
+              </LayersControl.BaseLayer>
+              <LayersControl.Overlay checked name="3D Hillshade">
+                <TileLayer
+                  attribution='Tiles &copy; Esri'
+                  url="https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+                  opacity={0.35}
+                  crossOrigin="anonymous"
+                />
+              </LayersControl.Overlay>
+            </LayersControl>
+
+            <ScaleControl position="bottomleft" />
+            <LocateControl />
+            <MapTools
+              onPickedPoint={setPickedPoint}
+              onToggleLegend={() => setShowLegend((v) => !v)}
+              showLegend={showLegend}
+              onExportPng={() => exportSnapshot(false)}
+              onPrintMap={() => exportSnapshot(true)}
+            />
+
+            <MarkerClusterGroup
+              chunkedLoading
+              maxClusterRadius={50}
+              showCoverageOnHover={false}
+              spiderfyOnMaxZoom={true}
             >
-              <LayersControl position="topleft">
-                <LayersControl.BaseLayer checked name="Street (OSM)">
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    crossOrigin="anonymous"
-                  />
-                </LayersControl.BaseLayer>
-
-                <LayersControl.BaseLayer name="Topographic">
-                  <TileLayer
-                    attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM | Tiles: <a href="https://opentopomap.org">OpenTopoMap</a>'
-                    url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-                    crossOrigin="anonymous"
-                  />
-                </LayersControl.BaseLayer>
-
-                <LayersControl.BaseLayer name="Satellite">
-                  <TileLayer
-                    attribution='Tiles &copy; Esri'
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                    crossOrigin="anonymous"
-                  />
-                </LayersControl.BaseLayer>
-
-                <LayersControl.Overlay checked name="Terrain / Hillshade (3D-like)">
-                  <TileLayer
-                    attribution='Tiles &copy; Esri'
-                    url="https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
-                    opacity={0.35}
-                    crossOrigin="anonymous"
-                  />
-                </LayersControl.Overlay>
-              </LayersControl>
-
-              <ScaleControl position="bottomleft" />
-              <LocateControl />
-              <MapTools
-                onPickedPoint={setPickedPoint}
-                onToggleLegend={() => setShowLegend((v) => !v)}
-                showLegend={showLegend}
-                onExportPng={() => exportSnapshot(false)}
-                onPrintMap={() => exportSnapshot(true)}
-              />
-
-              <GeoJSON
-                data={nationalBoundary as GeoJSON.GeoJsonObject}
-                style={{ color: "#0f172a", weight: 2.2, opacity: 0.9, fillOpacity: 0.04 }}
-              />
-              <GeoJSON
-                data={provincialBoundary as GeoJSON.GeoJsonObject}
-                style={{ color: "#1e40af", weight: 1.2, opacity: 0.8, fillOpacity: 0 }}
-              />
-
               {selectedSpots.map((spot, idx) => {
                 const spotKey = getSpotKey(spot, idx);
                 const isActive = selectedSpotKey === spotKey;
                 const coords = getSpotLatLng(spot);
-                const isRouteStop = routeSpotSet.has(spot);
-                if (isActive || !coords || (isRouteMode && isRouteStop)) return null;
-
-                const p = spot.properties;
-                const categoryColor = getCategoryColor(p.category);
-                const [lat, lng] = coords;
-
-                return (
-                  <CircleMarker
-                    key={spotKey}
-                    center={[lat, lng]}
-                    radius={isRouteMode ? 5 : 7}
-                    eventHandlers={{
-                      click: () => setSelectedSpotKey(spotKey),
-                    }}
-                    pathOptions={{
-                      color: isRouteMode ? "#94a3b8" : categoryColor,
-                      fillColor: isRouteMode ? "#94a3b8" : categoryColor,
-                      fillOpacity: isRouteMode ? 0.2 : 0.85,
-                      weight: 1,
-                    }}
-                  >
-                    <Popup>
-                      <div className="space-y-1">
-                        <p className="font-semibold">{p._key ?? "Tourist Spot"}</p>
-                        {p.category && <p><strong>Category:</strong> {p.category}</p>}
-                        {p.district && <p><strong>District:</strong> {p.district}</p>}
-                        {p.tehsil && <p><strong>Tehsil:</strong> {p.tehsil}</p>}
-                        {p.province && <p><strong>Province:</strong> {p.province}</p>}
-                        {p.Desc && <p className="text-sm">{p.Desc}</p>}
-                      </div>
-                    </Popup>
-                  </CircleMarker>
-                );
-              })}
-
-              {selectedSpots.map((spot, idx) => {
-                const spotKey = getSpotKey(spot, idx);
-                const isActive = selectedSpotKey === spotKey;
-                const coords = getSpotLatLng(spot);
-                const isRouteStop = routeSpotSet.has(spot);
-                if (!isActive || !coords || (isRouteMode && isRouteStop)) return null;
-
-                const p = spot.properties;
-                const categoryColor = getCategoryColor(p.category);
-                const [lat, lng] = coords;
-
-                return (
-                  <CircleMarker
-                    key={`${spotKey}-active`}
-                    center={[lat, lng]}
-                    radius={12}
-                    eventHandlers={{
-                      click: () => setSelectedSpotKey(spotKey),
-                    }}
-                    pathOptions={{
-                      color: "#111827",
-                      fillColor: categoryColor,
-                      fillOpacity: 1,
-                      weight: 3,
-                    }}
-                  >
-                    <Popup>
-                      <div className="space-y-1">
-                        <p className="font-semibold">{p._key ?? "Tourist Spot"}</p>
-                        {p.category && <p><strong>Category:</strong> {p.category}</p>}
-                        {p.district && <p><strong>District:</strong> {p.district}</p>}
-                        {p.tehsil && <p><strong>Tehsil:</strong> {p.tehsil}</p>}
-                        {p.province && <p><strong>Province:</strong> {p.province}</p>}
-                        {p.Desc && <p className="text-sm">{p.Desc}</p>}
-                      </div>
-                    </Popup>
-                  </CircleMarker>
-                );
-              })}
-
-              {routeStops.map((stop, idx) => {
-                const coords = getSpotLatLng(stop.spot);
                 if (!coords) return null;
+
+                const p = spot.properties;
                 const [lat, lng] = coords;
-                const color = ROUTE_SEGMENT_COLORS[idx % ROUTE_SEGMENT_COLORS.length];
 
                 return (
-                  <CircleMarker
-                    key={`route-stop-${stop.key}-${idx}`}
-                    center={[lat, lng]}
-                    radius={11}
-                    pathOptions={{
-                      color: "#0f172a",
-                      fillColor: color,
-                      fillOpacity: 1,
-                      weight: 3,
+                  <Marker
+                    key={`marker-${spotKey}`}
+                    position={[lat, lng]}
+                    icon={createCustomIcon(p.category || "Tourism", isActive)}
+                    eventHandlers={{
+                      click: () => handleSpotClick(spot, spotKey),
                     }}
                   >
-                    <Tooltip permanent direction="top" offset={[0, -8]}>
-                      {stop.role}
-                    </Tooltip>
-                    <Popup>
-                      <div className="space-y-1">
-                        <p className="font-semibold">{stop.role}</p>
-                        <p>{stop.spot.properties._key ?? "Tourist Spot"}</p>
-                        {stop.spot.properties.province && (
-                          <p><strong>Province:</strong> {stop.spot.properties.province}</p>
-                        )}
+                    <Popup className="custom-popup">
+                      <div className="p-1 space-y-2">
+                        <div>
+                          <h3 className="font-bold text-sm text-teal-900">{p._key ?? "Tourist Spot"}</h3>
+                          <p className="text-[10px] text-teal-700 uppercase font-bold tracking-tight">{p.province}</p>
+                        </div>
+                        <p className="text-xs text-slate-600 line-clamp-2">{p.Desc || "Explore this destination."}</p>
+                        <Button 
+                          size="sm" 
+                          className="w-full h-8 text-[10px] bg-teal-600 hover:bg-teal-700 text-white rounded-md"
+                          onClick={() => handleSpotClick(spot, spotKey)}
+                        >
+                          Explore 360° Tour
+                        </Button>
                       </div>
                     </Popup>
-                  </CircleMarker>
+                  </Marker>
                 );
               })}
+            </MarkerClusterGroup>
 
-              {routeInfo?.path && (
-                <Polyline
-                  positions={routeInfo.path}
-                  pathOptions={{
-                    color: "#dc2626",
-                    weight: 5,
-                    opacity: 0.9,
-                  }}
-                />
-              )}
+            {routeInfo?.path && (
+              <Polyline positions={routeInfo.path} pathOptions={{ color: "#dc2626", weight: 5 }} />
+            )}
 
-              {routeSegments.map((segment, idx) => (
-                <Polyline
-                  key={`direct-segment-${idx}`}
-                  positions={segment}
-                  pathOptions={{
-                    color: ROUTE_SEGMENT_COLORS[idx % ROUTE_SEGMENT_COLORS.length],
-                    weight: 3,
-                    opacity: 0.8,
-                    dashArray: "10 8",
-                  }}
-                />
-              ))}
-
-              {pickedPoint && (
-                <CircleMarker
-                  center={[pickedPoint.lat, pickedPoint.lng]}
-                  radius={9}
-                  pathOptions={{ color: "#0f172a", fillColor: "#22c55e", fillOpacity: 0.95, weight: 2 }}
-                >
-                  <Popup>
-                    <div className="space-y-1">
-                      <p className="font-semibold">Selected Coordinates</p>
-                      <p><strong>Lat:</strong> {pickedPoint.lat.toFixed(6)}</p>
-                      <p><strong>Lng:</strong> {pickedPoint.lng.toFixed(6)}</p>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              )}
-
-              {showLegend && (
-                <div className="absolute z-[1200] right-3 bottom-3 rounded-lg border bg-white/95 p-3 text-[11px] shadow max-w-[230px]">
-                  <p className="font-semibold mb-1">Legend</p>
-                  <p>- Dashed multicolor: route segments</p>
-                  <p>- Solid red line: road route</p>
-                  <p>- Highlighted circle: selected point</p>
+            {showLegend && (
+              <div className="absolute z-[1200] right-3 bottom-3 rounded-xl border border-white/10 bg-[#0f2027]/90 p-4 text-[11px] text-white shadow-2xl backdrop-blur-md">
+                <p className="font-bold text-teal-400 mb-2 uppercase tracking-widest">Map Legend</p>
+                <div className="space-y-1.5 opacity-80">
+                  <p>• Colored markers: Attractions</p>
+                  <p>• Grouped bubbles: Clusters</p>
+                  <p>• Solid Red: Planned Route</p>
                 </div>
-              )}
+              </div>
+            )}
 
-              <FitToSpots spots={selectedSpots} />
-              <FocusSelectedSpot spot={selectedSpot} />
-            </MapContainer>
-          </div>
+            <FitToSpots spots={selectedSpots} />
+            <FocusSelectedSpot spot={selectedSpot} />
+          </MapContainer>
+        </div>
 
-          <aside className="rounded-2xl border bg-card p-3 md:p-4 shadow-sm">
-            <Accordion
-              type="multiple"
-              className="w-full"
-            >
-              <AccordionItem value="spot-details">
-                <AccordionTrigger className="py-2 text-base font-semibold hover:no-underline">
-                  Spot Details
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Click a marker or a card to sync selection.
-                  </p>
-
-                  <div className="mt-4 max-h-[38vh] md:max-h-[50vh] space-y-3 overflow-y-auto pr-1">
-                    {selectedSpots.map((spot, idx) => {
-                      const p = spot.properties;
-                      const spotKey = getSpotKey(spot, idx);
-                      const isActive = selectedSpotKey === spotKey;
-                      const color = getCategoryColor(p.category);
-
-                      return (
-                        <button
-                          type="button"
-                          key={spotKey}
-                          onClick={() => setSelectedSpotKey(spotKey)}
-                          className={`w-full rounded-xl border p-3 text-left transition ${
-                            isActive ? "border-primary bg-primary/5" : "hover:bg-muted/60"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <p className="font-medium leading-snug">{p._key ?? "Tourist Spot"}</p>
-                            <span
-                              className="mt-1 inline-block h-3 w-3 rounded-full"
-                              style={{ backgroundColor: color }}
-                            />
-                          </div>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {p.category ?? "General"} {p.district ? `• ${p.district}` : ""}
-                          </p>
-                          {p.Desc && (
-                            <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{p.Desc}</p>
-                          )}
-                        </button>
-                      );
-                    })}
-                    {!selectedSpots.length && (
-                      <p className="rounded-lg border p-3 text-sm text-muted-foreground">
-                        No spots found for this filter.
-                      </p>
-                    )}
-                  </div>
-
-                  {selectedSpot && (
-                    <div className="mt-4 rounded-xl border bg-muted/40 p-3">
-                      <p className="text-sm font-semibold">Selected:</p>
-                      <p className="text-sm">{selectedSpot.properties._key ?? "Tourist Spot"}</p>
-                    </div>
-                  )}
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="distance-path">
-                <AccordionTrigger className="py-2 text-base font-semibold hover:no-underline">
-                  Distance & Path
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Pick points across any province and build multi-stop routes.
-                  </p>
-
-                  <div className="mt-3 space-y-3">
-                    <div>
-                      <p className="mb-1 text-xs font-medium text-muted-foreground">1st Spot (Start)</p>
-                    <div className="grid gap-2 md:grid-cols-2">
-                      <Select value={fromProvinceKey} onValueChange={(value) => {
-                        setFromProvinceKey(value);
-                        setFromSpotKey("none");
-                      }}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="From province" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="all">All Provinces</SelectItem>
-                          {provinceOptions.map((province) => (
-                            <SelectItem key={`from-province-${province}`} value={province}>
-                              {province}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Select value={fromSpotKey} onValueChange={setFromSpotKey}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="From spot" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="none">From spot</SelectItem>
-                          {fromSpotOptions.map((option) => (
-                            <SelectItem key={`from-${option.key}`} value={option.key}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-1 text-xs font-medium text-muted-foreground">2nd Stop (Optional)</p>
-                    <div className="grid gap-2 md:grid-cols-2">
-                      <Select value={via1ProvinceKey} onValueChange={(value) => {
-                        setVia1ProvinceKey(value);
-                        setViaSpot1Key("none");
-                      }}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Stop 1 province (optional)" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="all">All Provinces</SelectItem>
-                          {provinceOptions.map((province) => (
-                            <SelectItem key={`via1-province-${province}`} value={province}>
-                              {province}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Select value={viaSpot1Key} onValueChange={setViaSpot1Key}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Via stop 1 (optional)" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="none">Via stop 1 (optional)</SelectItem>
-                          {via1SpotOptions.map((option) => (
-                            <SelectItem key={`via1-${option.key}`} value={option.key}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-1 text-xs font-medium text-muted-foreground">3rd Stop (Optional)</p>
-                    <div className="grid gap-2 md:grid-cols-2">
-                      <Select value={via2ProvinceKey} onValueChange={(value) => {
-                        setVia2ProvinceKey(value);
-                        setViaSpot2Key("none");
-                      }}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Stop 2 province (optional)" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="all">All Provinces</SelectItem>
-                          {provinceOptions.map((province) => (
-                            <SelectItem key={`via2-province-${province}`} value={province}>
-                              {province}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Select value={viaSpot2Key} onValueChange={setViaSpot2Key}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Via stop 2 (optional)" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="none">Via stop 2 (optional)</SelectItem>
-                          {via2SpotOptions.map((option) => (
-                            <SelectItem key={`via2-${option.key}`} value={option.key}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    </div>
-
-                    {extraStops.map((extraStop, idx) => {
-                      const rowLabel = `${idx + 4}th Stop (Optional)`;
-                      const options = filterSpotsByProvince(extraStop.provinceKey);
-                      return (
-                        <div key={`extra-stop-row-${extraStop.id}`}>
-                          <div className="mb-1 flex items-center justify-between">
-                            <p className="text-xs font-medium text-muted-foreground">{rowLabel}</p>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setExtraStops((prev) => prev.filter((item) => item.id !== extraStop.id))
-                              }
-                              className="text-xs text-red-600 hover:underline"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                          <div className="grid gap-2 md:grid-cols-2">
-                            <Select
-                              value={extraStop.provinceKey}
-                              onValueChange={(value) =>
-                                setExtraStops((prev) =>
-                                  prev.map((item) =>
-                                    item.id === extraStop.id
-                                      ? { ...item, provinceKey: value, spotKey: "none" }
-                                      : item
-                                  )
-                                )
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder={`${rowLabel} province`} />
-                              </SelectTrigger>
-                              <SelectContent className="z-[1200]">
-                                <SelectItem value="all">All Provinces</SelectItem>
-                                {provinceOptions.map((province) => (
-                                  <SelectItem key={`extra-${extraStop.id}-province-${province}`} value={province}>
-                                    {province}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-
-                            <Select
-                              value={extraStop.spotKey}
-                              onValueChange={(value) =>
-                                setExtraStops((prev) =>
-                                  prev.map((item) =>
-                                    item.id === extraStop.id ? { ...item, spotKey: value } : item
-                                  )
-                                )
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder={rowLabel} />
-                              </SelectTrigger>
-                              <SelectContent className="z-[1200]">
-                                <SelectItem value="none">{rowLabel}</SelectItem>
-                                {options.map((option) => (
-                                  <SelectItem key={`extra-${extraStop.id}-${option.key}`} value={option.key}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+        {/* Desktop Information Sidebar */}
+        <div className={cn(
+          "hidden md:flex flex-col border-l border-white/10 bg-[#0f2027] transition-all duration-500 overflow-hidden",
+          isTourPanelOpen ? "w-0 opacity-0" : "w-[360px] opacity-100"
+        )}>
+          <ScrollArea className="flex-1">
+            <div className="p-6">
+              <Accordion 
+                type="multiple" 
+                value={expandedAccordion} 
+                onValueChange={setExpandedAccordion}
+                className="space-y-4"
+              >
+                <AccordionItem value="spot-details" className="border border-white/10 rounded-2xl bg-white/5 px-4 overflow-hidden">
+                  <AccordionTrigger className="hover:no-underline py-4">
+                    <span className="font-bold text-sm">Spot Details</span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {tourLocation ? (
+                      <div className="space-y-4 pb-4 animate-in fade-in duration-500">
+                        <div>
+                          <h3 className="text-lg font-bold text-white">{tourLocation.name}</h3>
+                          <p className="text-[10px] font-bold text-teal-400 uppercase tracking-widest">{tourLocation.province}</p>
                         </div>
-                      );
-                    })}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        setExtraStops((prev) => [
-                          ...prev,
-                          { id: nextExtraStopId, provinceKey: "all", spotKey: "none" },
-                        ]);
-                        setNextExtraStopId((prev) => prev + 1);
-                      }}
-                    >
-                      Add more stop
-                    </Button>
-
-                    <div>
-                      <p className="mb-1 text-xs font-medium text-muted-foreground">Final Destination</p>
-                    <div className="grid gap-2 md:grid-cols-2">
-                      <Select value={toProvinceKey} onValueChange={(value) => {
-                        setToProvinceKey(value);
-                        setToSpotKey("none");
-                      }}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Destination province" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="all">All Provinces</SelectItem>
-                          {provinceOptions.map((province) => (
-                            <SelectItem key={`to-province-${province}`} value={province}>
-                              {province}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Select value={toSpotKey} onValueChange={setToSpotKey}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="To spot" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[1200]">
-                          <SelectItem value="none">To spot</SelectItem>
-                          {toSpotOptions.map((option) => (
-                            <SelectItem key={`to-${option.key}`} value={option.key}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 rounded-md bg-muted/50 p-2 space-y-1">
-                    {routeDistanceKm !== null ? (
-                      <p className="text-sm">
-                        Straight-line distance:{" "}
-                        <span className="font-semibold">{routeDistanceKm.toFixed(2)} km</span>
-                      </p>
+                        <p className="text-xs text-slate-400 leading-relaxed italic">
+                          {tourLocation.name} is a premier destination in {tourLocation.province}. Start a virtual tour to learn more.
+                        </p>
+                      </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground">
-                        Select both points to calculate distance.
-                      </p>
-                    )}
-
-                    {routeLoading && <p className="text-xs text-muted-foreground">Fetching road route...</p>}
-                    {routeInfo && !routeLoading && (
-                      <>
-                        <p className="text-sm">
-                          Road distance: <span className="font-semibold">{routeInfo.distanceKm.toFixed(2)} km</span>
-                        </p>
-                        <p className="text-sm">
-                          Estimated drive time:{" "}
-                          <span className="font-semibold">{formatDuration(routeInfo.durationMin)}</span>
-                        </p>
-                      </>
-                    )}
-                    {routeError && !routeLoading && (
-                      <p className="text-xs text-red-600">
-                        Road route unavailable ({routeError}). Showing straight-line path.
-                      </p>
-                    )}
-                    {routeStops.length > 0 && (
-                      <div className="mt-2 space-y-1 border-t pt-2">
-                        {routeStops.map((stop, idx) => (
-                          <p key={`route-stop-label-${stop.key}-${idx}`} className="text-xs text-muted-foreground">
-                            <span className="font-semibold">{stop.role}:</span>{" "}
-                            {stop.spot.properties._key ?? "Tourist Spot"}
-                          </p>
-                        ))}
+                      <div className="py-8 text-center opacity-30">
+                        <Compass className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-[10px] uppercase font-bold">Select a spot</p>
                       </div>
                     )}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </aside>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="spots-list" className="border border-white/10 rounded-2xl bg-white/5 px-4 overflow-hidden">
+                  <AccordionTrigger className="hover:no-underline py-4">
+                    <span className="font-bold text-sm">Discover Spots ({selectedSpots.length})</span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2 max-h-[400px] pb-4">
+                      {selectedSpots.slice(0, 20).map((spot, idx) => (
+                        <button
+                          key={`list-${idx}`}
+                          onClick={() => handleSpotClick(spot, getSpotKey(spot, idx))}
+                          className="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all group"
+                        >
+                          <p className="text-sm font-medium group-hover:text-teal-400 transition-colors">{spot.properties._key}</p>
+                          <p className="text-[10px] text-slate-500 uppercase">{spot.properties.district}</p>
+                        </button>
+                      ))}
+                      {selectedSpots.length > 20 && (
+                        <p className="text-[10px] text-center text-slate-500 italic pt-2">Zoom in to see more spots on the map</p>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </ScrollArea>
         </div>
+        
+        {/* Desktop Virtual Tour Panel Overlay (Sidebar) */}
+        <div className={cn(
+          "hidden md:block h-full transition-all duration-500 overflow-hidden border-l border-white/10",
+          isTourPanelOpen ? "w-[500px]" : "w-0 border-none"
+        )}>
+          <VirtualTourPanel 
+            isOpen={isTourPanelOpen} 
+            onClose={() => setIsTourPanelOpen(false)} 
+            location={tourLocation} 
+          />
+        </div>
+      </div>
+
+      {/* Mobile Tour Panel (Fixed Overlay) */}
+      <div className="md:hidden">
+        <VirtualTourPanel 
+          isOpen={isTourPanelOpen} 
+          onClose={() => setIsTourPanelOpen(false)} 
+          location={tourLocation} 
+        />
       </div>
     </div>
   );

@@ -12,9 +12,12 @@ function googleGenAiApiKey(): string | undefined {
 
 /** Default model; override with GEMINI_MODEL e.g. googleai/gemini-2.5-flash */
 const defaultGeminiModel =
-  process.env.GEMINI_MODEL ?? "googleai/gemini-2.0-flash";
+  process.env.GEMINI_MODEL ?? "googleai/gemini-1.5-flash";
 
 export const ai = genkit({
-  plugins: [googleAI({ apiKey: googleGenAiApiKey() })],
+  plugins: [googleAI({ 
+    apiKey: googleGenAiApiKey(),
+    apiVersion: 'v1'
+  })],
   model: defaultGeminiModel,
 });
