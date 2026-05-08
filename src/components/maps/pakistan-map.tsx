@@ -14,7 +14,7 @@ import {
   Tooltip,
   useMap,
 } from "react-leaflet";
-import { Compass, Sparkles } from "lucide-react";
+import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye } from "lucide-react";
 import { LatLngBoundsExpression } from "leaflet";
 
 function MapResizer({ isOpen }: { isOpen: boolean }) {
@@ -378,6 +378,9 @@ export default function PakistanMap() {
   const [pickedPoint, setPickedPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
+  // Search and Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Sidebar / Accordion State
   const [expandedAccordion, setExpandedAccordion] = useState<string[]>(["spot-details", "spots-list"]);
   const [isTourPanelOpen, setIsTourPanelOpen] = useState(false);
@@ -387,6 +390,8 @@ export default function PakistanMap() {
     province: string;
     imageUrl: string;
     youtubeId?: string;
+    description?: string;
+    category?: string;
   } | null>(null);
 
   const handleSpotClick = (spot: SpotFeature, key: string) => {
@@ -422,12 +427,14 @@ export default function PakistanMap() {
       coordinates: tourSpot ? tourSpot.coordinates : (latLng ? { lat: latLng[0], lng: latLng[1] } : { lat: 30, lng: 70 }),
       province: spot.properties.province || tourSpot?.province || "Pakistan",
       imageUrl: tourSpot?.imageUrl || smartFallback,
-      youtubeId: tourSpot?.youtubeId
+      youtubeId: tourSpot?.youtubeId,
+      description: spot.properties.Desc || tourSpot?.description,
+      category: spot.properties.category || tourSpot?.category
     });
     
     // Auto-expand spot details and ensure it's open
     setExpandedAccordion(["spot-details"]);
-    setIsTourPanelOpen(true);
+    // setIsTourPanelOpen(true); // Don't auto-open tour panel, show sidebar details instead
   };
 
   // Sync with search params for virtual tours
@@ -739,6 +746,16 @@ export default function PakistanMap() {
     return () => controller.abort();
   }, [routeLine]);
 
+  const filteredSpots = useMemo(() => {
+    if (!searchQuery) return selectedSpots;
+    const query = searchQuery.toLowerCase();
+    return selectedSpots.filter(spot => 
+      spot.properties._key?.toLowerCase().includes(query) ||
+      spot.properties.district?.toLowerCase().includes(query) ||
+      spot.properties.category?.toLowerCase().includes(query)
+    );
+  }, [selectedSpots, searchQuery]);
+
   return (
     <div className="flex flex-col h-screen bg-[#0f2027] overflow-hidden">
       {/* Top Navigation / Filter Bar */}
@@ -880,19 +897,24 @@ export default function PakistanMap() {
                       click: () => handleSpotClick(spot, spotKey),
                     }}
                   >
-                    <Popup className="custom-popup">
-                      <div className="p-1 space-y-2">
-                        <div>
-                          <h3 className="font-bold text-sm text-teal-900">{p._key ?? "Tourist Spot"}</h3>
-                          <p className="text-[10px] text-teal-700 uppercase font-bold tracking-tight">{p.province}</p>
+                    <Popup className="custom-popup" minWidth={220}>
+                      <div className="p-2 space-y-3 bg-white/95 backdrop-blur-sm rounded-lg">
+                        <div className="border-b border-teal-100 pb-2">
+                          <h3 className="font-bold text-sm text-teal-900 leading-tight">{p._key ?? "Tourist Spot"}</h3>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <MapPin className="h-2 w-2 text-teal-600" />
+                            <p className="text-[9px] text-teal-700 uppercase font-bold tracking-wider">{p.province}</p>
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-600 line-clamp-2">{p.Desc || "Explore this destination."}</p>
+                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                          {p.Desc || "Explore this stunning destination and discover its unique beauty."}
+                        </p>
                         <Button 
                           size="sm" 
-                          className="w-full h-8 text-[10px] bg-teal-600 hover:bg-teal-700 text-white rounded-md"
+                          className="w-full h-9 text-[11px] font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-600/20 transition-all hover:scale-[1.02]"
                           onClick={() => handleSpotClick(spot, spotKey)}
                         >
-                          Explore 360° Tour
+                          View Details & Tour
                         </Button>
                       </div>
                     </Popup>
@@ -923,64 +945,162 @@ export default function PakistanMap() {
 
         {/* Desktop Information Sidebar */}
         <div className={cn(
-          "hidden md:flex flex-col border-l border-white/10 bg-[#0f2027] transition-all duration-500 overflow-hidden",
-          isTourPanelOpen ? "w-0 opacity-0" : "w-[360px] opacity-100"
+          "hidden md:flex flex-col border-l border-white/10 bg-[#071317] transition-all duration-500 overflow-hidden",
+          isTourPanelOpen ? "w-0 opacity-0" : "w-[380px] opacity-100"
         )}>
           <ScrollArea className="flex-1">
-            <div className="p-6">
-              <Accordion 
-                type="multiple" 
-                value={expandedAccordion} 
-                onValueChange={setExpandedAccordion}
-                className="space-y-4"
-              >
-                <AccordionItem value="spot-details" className="border border-white/10 rounded-2xl bg-white/5 px-4 overflow-hidden">
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="font-bold text-sm">Spot Details</span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    {tourLocation ? (
-                      <div className="space-y-4 pb-4 animate-in fade-in duration-500">
-                        <div>
-                          <h3 className="text-lg font-bold text-white">{tourLocation.name}</h3>
-                          <p className="text-[10px] font-bold text-teal-400 uppercase tracking-widest">{tourLocation.province}</p>
-                        </div>
-                        <p className="text-xs text-slate-400 leading-relaxed italic">
-                          {tourLocation.name} is a premier destination in {tourLocation.province}. Start a virtual tour to learn more.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="py-8 text-center opacity-30">
-                        <Compass className="h-8 w-8 mx-auto mb-2" />
-                        <p className="text-[10px] uppercase font-bold">Select a spot</p>
-                      </div>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="spots-list" className="border border-white/10 rounded-2xl bg-white/5 px-4 overflow-hidden">
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="font-bold text-sm">Discover Spots ({selectedSpots.length})</span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-2 max-h-[400px] pb-4">
-                      {selectedSpots.slice(0, 20).map((spot, idx) => (
-                        <button
-                          key={`list-${idx}`}
-                          onClick={() => handleSpotClick(spot, getSpotKey(spot, idx))}
-                          className="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all group"
-                        >
-                          <p className="text-sm font-medium group-hover:text-teal-400 transition-colors">{spot.properties._key}</p>
-                          <p className="text-[10px] text-slate-500 uppercase">{spot.properties.district}</p>
-                        </button>
-                      ))}
-                      {selectedSpots.length > 20 && (
-                        <p className="text-[10px] text-center text-slate-500 italic pt-2">Zoom in to see more spots on the map</p>
-                      )}
+            <div className="p-6 space-y-6">
+              {/* Spot Details Card */}
+              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-teal-500/10">
+                <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+                  <div className="flex items-center gap-2">
+                    <Info className="h-4 w-4 text-teal-400" />
+                    <span className="font-bold text-xs uppercase tracking-widest text-white">Spot Details</span>
+                  </div>
+                  {tourLocation && (
+                    <div className="px-2 py-0.5 rounded-full bg-teal-500/20 border border-teal-500/30">
+                      <span className="text-[9px] font-bold text-teal-400 uppercase tracking-tighter">{tourLocation.category || "Point of Interest"}</span>
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                  )}
+                </div>
+                
+                <div className="p-5">
+                  {tourLocation ? (
+                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-500">
+                      {tourLocation.imageUrl && (
+                        <div className="relative aspect-video rounded-xl overflow-hidden group">
+                          <img 
+                            src={tourLocation.imageUrl} 
+                            alt={tourLocation.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-xl font-bold text-white tracking-tight">{tourLocation.name}</h3>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <MapPin className="h-3 w-3 text-teal-400" />
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{tourLocation.province}</p>
+                        </div>
+                      </div>
+                      
+                      <p className="text-sm text-slate-300 leading-relaxed font-light">
+                        {tourLocation.description || `${tourLocation.name} is a premier destination located in ${tourLocation.province}. Discover its beauty and history through our interactive guide.`}
+                      </p>
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          className="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs h-10 rounded-xl transition-all hover:scale-[1.02] active:scale-95"
+                          onClick={() => setIsTourPanelOpen(true)}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Start VR Tour
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center">
+                      <div className="relative inline-block mb-4">
+                        <Compass className="h-12 w-12 text-teal-500/20 animate-spin-slow" />
+                        <Search className="h-6 w-6 text-teal-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      </div>
+                      <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-widest">Select a Destination</h4>
+                      <p className="text-[11px] text-slate-500">Click a marker on the map to view its details and start a virtual tour.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Discover Spots Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-teal-400" />
+                    <span className="font-bold text-xs uppercase tracking-widest text-white">Discover Spots</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                    {filteredSpots.length} Found
+                  </span>
+                </div>
+
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-teal-400 transition-colors" />
+                  <input 
+                    type="text" 
+                    placeholder="Search by name, category, or district..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-11 bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-teal-500/50 focus:bg-white/[0.08] transition-all"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500 hover:text-white"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-2.5">
+                  {filteredSpots.length > 0 ? (
+                    filteredSpots.slice(0, 50).map((spot, idx) => {
+                      const spotKey = getSpotKey(spot, idx);
+                      const isSelected = selectedSpotKey === spotKey;
+                      
+                      return (
+                        <button
+                          key={`list-${spotKey}`}
+                          onClick={() => handleSpotClick(spot, spotKey)}
+                          className={cn(
+                            "w-full flex items-center gap-4 p-3 rounded-2xl border transition-all duration-300 group",
+                            isSelected 
+                              ? "bg-teal-500/10 border-teal-500/30" 
+                              : "bg-white/[0.02] border-white/5 hover:bg-white/[0.06] hover:border-white/10"
+                          )}
+                        >
+                          <div className={cn(
+                            "h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500",
+                            isSelected ? "bg-teal-500 text-white scale-110" : "bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-teal-400"
+                          )}>
+                            <MapPin className="h-5 w-5" />
+                          </div>
+                          
+                          <div className="flex-1 text-left">
+                            <h4 className={cn(
+                              "text-sm font-bold transition-colors truncate w-48",
+                              isSelected ? "text-teal-400" : "text-white group-hover:text-teal-300"
+                            )}>
+                              {spot.properties._key}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{spot.properties.district}</span>
+                              <span className="h-1 w-1 rounded-full bg-slate-700" />
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-teal-500/70">{spot.properties.category}</span>
+                            </div>
+                          </div>
+                          
+                          <ArrowRight className={cn(
+                            "h-4 w-4 transition-all duration-500",
+                            isSelected ? "text-teal-400 translate-x-0" : "text-slate-600 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+                          )} />
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
+                      <Filter className="h-10 w-10 text-slate-700 mx-auto mb-3" />
+                      <h4 className="text-slate-400 font-bold text-xs uppercase tracking-widest">No spots found</h4>
+                      <p className="text-[10px] text-slate-600 px-6 mt-1">Try adjusting your search query or zoom out to see more results.</p>
+                    </div>
+                  )}
+                  
+                  {filteredSpots.length > 50 && (
+                    <p className="text-[10px] text-center text-slate-500 italic pt-4">Zoom in to explore {filteredSpots.length - 50} more destinations</p>
+                  )}
+                </div>
+              </div>
             </div>
           </ScrollArea>
         </div>
