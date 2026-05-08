@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, Target, BookOpen, Info, Camera, ShieldCheck, LogIn
+  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, ShieldCheck, LogIn, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -20,23 +20,17 @@ const primaryNavLinks = [
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
+  { href: '/partners', label: 'Partners', icon: Users },
   { href: '/about', label: 'About', icon: Info },
 ];
 
-const utilityLinks = [
-  { href: '/partners', label: 'Partners', icon: Target },
-  { href: '/pro/login', label: 'Pro', icon: Target },
-  { href: '/admin/login', label: 'Admin', icon: ShieldCheck },
-];
+const utilityLinks: { href: string; label: string; icon?: any }[] = [];
 
 import { useAuth } from './auth-context';
 
-import { AuthDialog } from './auth-dialog';
-
 export default function Header() {
-  const { user, loginWithGoogle, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
@@ -59,7 +53,6 @@ export default function Header() {
         'fixed top-0 left-0 right-0 z-[2000] transition-all duration-500 ease-in-out px-4 py-4',
       )}
     >
-      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
       <div className={cn(
         "container mx-auto rounded-3xl transition-all duration-500 border overflow-hidden shadow-2xl ",
         isScrolled
@@ -68,7 +61,7 @@ export default function Header() {
             ? "bg-white/10 backdrop-blur-md border-white/20 h-20"
             : "bg-white/90 backdrop-blur-md border-[#30638E]/25 h-20"
       )}>
-        <div className="flex h-full items-center justify-between px-6">
+        <div className="flex h-full items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-3 active:scale-95 transition-transform">
             <div className={cn(
               "p-2 rounded-xl border transition-all duration-500",
@@ -85,14 +78,14 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
-            <nav className="flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-6">
+            <nav className="flex items-center gap-0">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'px-3 py-2 rounded-full text-sm font-semibold transition-all duration-300',
+                    'px-2 py-2 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 whitespace-nowrap',
                     isScrolled
                       ? 'text-[#74AFDB] hover:text-white hover:bg-white/10'
                       : isHomePage
@@ -105,7 +98,7 @@ export default function Header() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {user ? (
                 <div className="relative">
                   <button
@@ -139,18 +132,36 @@ export default function Header() {
               ) : (
                 <div
                   className={cn(
-                    "group relative w-[108px] overflow-hidden rounded-full border px-2 py-1 transition-all duration-300 hover:w-[292px] focus-within:w-[292px]",
+                    "group relative w-[124px] overflow-hidden rounded-full border px-2 py-1 transition-all duration-500 ease-out hover:w-[320px] focus-within:w-[320px]",
                     isScrolled
-                      ? "border-white/15 bg-white/5"
+                      ? "border-white/15 bg-white/5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
                       : isHomePage
-                        ? "border-white/15 bg-white/10"
-                        : "border-[#30638E]/15 bg-[#74AFDB]/10"
+                        ? "border-white/15 bg-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.14)]"
+                        : "border-[#30638E]/15 bg-[#74AFDB]/10 shadow-[0_8px_24px_rgba(48,99,142,0.12)]"
                   )}
                 >
-                  <button
-                    onClick={() => setIsAuthDialogOpen(true)}
+                  <div
+                    aria-hidden="true"
                     className={cn(
-                      "flex items-center justify-center w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
+                      "pointer-events-none absolute inset-0",
+                      isScrolled
+                        ? "bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))]"
+                        : isHomePage
+                          ? "bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))]"
+                          : "bg-[radial-gradient(circle_at_top_left,rgba(116,175,219,0.22),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.78),rgba(226,240,251,0.92))]"
+                    )}
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-1 left-[18px] w-20 rounded-full border border-current/10 opacity-0 blur-[1px] transition-all duration-500 group-hover:left-[92px] group-hover:opacity-100 group-focus-within:left-[92px] group-focus-within:opacity-100"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -left-6 top-1/2 h-16 w-16 -translate-y-1/2 rounded-full bg-white/20 blur-2xl opacity-0 transition-all duration-500 group-hover:left-8 group-hover:opacity-100 group-focus-within:left-8 group-focus-within:opacity-100"
+                  />
+                  <Link href="/login"
+                    className={cn(
+                      "relative z-10 flex items-center justify-center w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 group-hover:-translate-x-6 group-hover:opacity-0 group-focus-within:-translate-x-6 group-focus-within:opacity-0",
                       isScrolled
                         ? "text-white/85"
                         : isHomePage
@@ -159,9 +170,45 @@ export default function Header() {
                     )}
                   >
                     Login
-                  </button>
+                  </Link>
 
-                  <div className="absolute inset-0 flex items-center gap-1 px-2 py-1 opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                  <div className="absolute inset-0 z-10 flex items-center justify-between gap-3 px-3 py-1.5 opacity-0 transition-all duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div
+                        className={cn(
+                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors duration-300",
+                          isScrolled
+                            ? "border-white/15 bg-white/10 text-white"
+                            : isHomePage
+                              ? "border-white/20 bg-white/15 text-white"
+                              : "border-[#30638E]/15 bg-white/70 text-[#003D5B]"
+                        )}
+                      >
+                        <LogIn className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p
+                          className={cn(
+                            "truncate text-sm font-semibold leading-none",
+                            isScrolled ? "text-white" : isHomePage ? "text-white" : "text-[#003D5B]"
+                          )}
+                        >
+                          Member Access
+                        </p>
+                        <p
+                          className={cn(
+                            "truncate text-[11px] leading-none mt-1",
+                            isScrolled
+                              ? "text-white/60"
+                              : isHomePage
+                                ? "text-white/70"
+                                : "text-[#30638E]"
+                          )}
+                        >
+                          Secure login
+                        </p>
+                      </div>
+                    </div>
                     {utilityLinks.map((link) => (
                       <Link
                         key={link.href}
@@ -178,15 +225,18 @@ export default function Header() {
                         {link.label}
                       </Link>
                     ))}
-                    <button 
-                      onClick={() => setIsAuthDialogOpen(true)}
+                    <Link href="/login"
                       className={cn(
-                        "rounded-full px-3 py-2 text-sm font-semibold transition-colors",
-                        isScrolled ? "text-white/80 hover:bg-white/10" : isHomePage ? "text-white/85 hover:bg-white/15" : "text-[#003D5B] hover:bg-white"
+                        "shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 hover:scale-[1.02]",
+                        isScrolled
+                          ? "bg-white text-[#003D5B] hover:bg-white/90"
+                          : isHomePage
+                            ? "bg-white text-primary hover:bg-white/90"
+                            : "bg-[#003D5B] text-white hover:bg-[#005173]"
                       )}
                     >
                       Login
-                    </button>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -194,7 +244,7 @@ export default function Header() {
               <Button
                 asChild
                 className={cn(
-                  "rounded-full font-bold shadow-md transition-all",
+                  "rounded-full font-bold shadow-md transition-all text-sm whitespace-nowrap px-4 py-2",
                   isScrolled
                     ? "bg-primary text-white hover:bg-primary/90"
                     : isHomePage
@@ -295,16 +345,16 @@ export default function Header() {
                         </SheetClose>
                       ))}
                       {!user && (
-                        <Button
-                          onClick={() => setIsAuthDialogOpen(true)}
-                          variant="ghost"
-                          className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
-                        >
-                          <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
-                            <LogIn className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
-                          </div>
-                          Login / Register
-                        </Button>
+                        <SheetClose asChild>
+                          <Link href="/login"
+                            className="w-full flex items-center justify-start gap-4 px-5 py-7 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                          >
+                            <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
+                              <LogIn className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
+                            </div>
+                            Login / Register
+                          </Link>
+                        </SheetClose>
                       )}
                       {user && (
                         <Button

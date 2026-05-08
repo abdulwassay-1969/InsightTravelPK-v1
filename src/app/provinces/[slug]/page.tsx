@@ -15,7 +15,6 @@ import azadKashmirSpots from "@/data/azad_kashmir.json";
 import capitalSpots from "@/data/capital.json";
 
 import EmbeddedMapClient from '@/components/maps/embedded-map-client';
-import { getPublicPartnersByProvinceSlug } from "@/lib/pro/supabase";
 
 export async function generateStaticParams() {
   return provinces.map((p) => ({
@@ -59,7 +58,6 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
 
   const heroImage = getProvinceHero(province.slug);
   const spots = getProvinceSpots(province.slug);
-  const publicPartners = await getPublicPartnersByProvinceSlug(province.slug);
   const blurUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8+v//fwAJaQOE+e1wFAAAAABJRU5ErkJggg==";
 
   const provinceDetails: Record<string, any> = {
@@ -231,79 +229,6 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
                 No districts available for this province yet. Check back soon!
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Tourist Spots from Map Data */}
-        <section className="container mx-auto px-4 mt-20 relative z-20">
-          <div className="bg-white rounded-3xl p-6 md:p-12 shadow-md border border-slate-100">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-slate-100 pb-8">
-              <div>
-                <h2 className="text-3xl font-bold font-headline text-slate-900">
-                  Local Partners in <span className="text-primary">{province.name}</span>
-                </h2>
-                <p className="text-slate-500 mt-2 text-lg">
-                  Approved hotels, guesthouses, cafes, restaurants, guides, and activity providers visible to all InsightTravelPK users.
-                </p>
-              </div>
-              <Button asChild className="hidden md:flex rounded-full mt-6 md:mt-0 shadow-lg hover:shadow-primary/30">
-                <Link href="/partners">
-                  Become a Partner <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
-
-            {publicPartners.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {publicPartners.map((partner) => (
-                  <article
-                    key={partner.id}
-                    className="rounded-2xl border border-slate-200 bg-stone-50 p-6 transition-colors hover:border-primary/40 hover:bg-white hover:shadow-lg"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900">{partner.name}</h3>
-                        <p className="mt-1 text-sm font-medium capitalize text-primary">{partner.type}</p>
-                      </div>
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
-                        Verified
-                      </span>
-                    </div>
-
-                    <div className="mt-4 space-y-2 text-sm text-slate-600">
-                      <p><strong>District:</strong> {partner.district || "Not specified"}</p>
-                      <p><strong>Location:</strong> {partner.location || "Not specified"}</p>
-                      {partner.contactPerson ? <p><strong>Contact:</strong> {partner.contactPerson}</p> : null}
-                    </div>
-
-                    {partner.description ? (
-                      <p className="mt-4 text-sm leading-6 text-slate-600">{partner.description}</p>
-                    ) : null}
-
-                    <div className="mt-5 flex flex-wrap gap-2 text-xs">
-                      {partner.phone ? (
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{partner.phone}</span>
-                      ) : null}
-                      {partner.website ? (
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{partner.website}</span>
-                      ) : null}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-stone-50 px-6 py-16 text-center text-slate-500">
-                No approved local partners are listed for this province yet.
-              </div>
-            )}
-
-            <div className="mt-8 flex justify-center md:hidden">
-              <Button asChild className="rounded-full shadow-lg">
-                <Link href="/partners">
-                  Become a Partner <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 

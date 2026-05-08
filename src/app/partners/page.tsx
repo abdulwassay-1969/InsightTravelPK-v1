@@ -1,12 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { getDistrictOptionsForRegion } from "@/lib/partners";
-import { PRO_REGIONS } from "@/lib/pro/mockData";
-import type { Region, SupplierType } from "@/lib/pro/types";
-import TravelLoginShell from "@/components/pro/TravelLoginShell";
+import { useState } from "react";
 
-const PARTNER_TYPES: SupplierType[] = [
+const PARTNER_TYPES = [
   "hotel",
   "guesthouse",
   "restaurant",
@@ -14,14 +10,22 @@ const PARTNER_TYPES: SupplierType[] = [
   "guide",
   "transport",
   "activity",
-  "city-tours",
   "trekking-operator",
+];
+
+const REGIONS = [
+  "Punjab",
+  "Sindh",
+  "Khyber Pakhtunkhwa",
+  "Balochistan",
+  "Gilgit-Baltistan",
+  "Azad Kashmir",
 ];
 
 export default function PartnersPage() {
   const [name, setName] = useState("");
-  const [type, setType] = useState<SupplierType>("hotel");
-  const [region, setRegion] = useState<Region>("Punjab");
+  const [type, setType] = useState("hotel");
+  const [region, setRegion] = useState("Punjab");
   const [district, setDistrict] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
@@ -32,8 +36,6 @@ export default function PartnersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  const districtOptions = useMemo(() => getDistrictOptionsForRegion(region), [region]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,7 +66,7 @@ export default function PartnersPage() {
         throw new Error(data.error || "Failed to submit application");
       }
 
-      setSuccess(data.message || "Application submitted.");
+      setSuccess(data.message || "Application submitted successfully! We'll review it and get back to you soon.");
       setName("");
       setType("hotel");
       setRegion("Punjab");
@@ -83,182 +85,249 @@ export default function PartnersPage() {
   }
 
   return (
-    <TravelLoginShell
-      eyebrow="InsightTravelPK Partners"
-      title="Travel Partner Gateway"
-      description="Bring your hotel, guesthouse, cafe, restaurant, guide service, or activity brand into the InsightTravelPK network and get discovered across destination pages."
-      leadBadgeText="Partner Onboarding"
-      heroTitle="Launch your travel business into the spotlight."
-      heroDescription="Designed for modern tourism brands that want a premium presence, admin-reviewed publishing, and visibility across both agency tools and public destination discovery."
-      accentClassName="bg-[linear-gradient(135deg,#003D5B,#00798C)]"
-      accentSoftClassName="text-[#00798C]"
-      panelGlowClassName="bg-[#003D5B]/18"
-      switchLabel="Already in the network?"
-      switchHref="/pro/login"
-      switchText="Open Pro login"
-      credentialTitle="How partner onboarding works"
-      credentialText="Apply here, get reviewed by admin, and once approved your listing goes live across InsightTravelPK."
-      stats={[
-        { label: "Types", value: "09" },
-        { label: "Regions", value: "08" },
-        { label: "Reach", value: "Public" },
-      ]}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-800">Business name</label>
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Serena Hunza Guesthouse"
-            className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-            required
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Partner type</label>
-            <select
-              value={type}
-              onChange={(event) => setType(event.target.value as SupplierType)}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-            >
-              {PARTNER_TYPES.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12 pt-8">
+          <div className="inline-block px-4 py-1 rounded-full bg-primary/10 mb-4">
+            <span className="text-sm font-semibold text-primary">Partner Program</span>
           </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Province</label>
-            <select
-              value={region}
-              onChange={(event) => {
-                setRegion(event.target.value as Region);
-                setDistrict("");
-              }}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-            >
-              {PRO_REGIONS.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">District</label>
-            <select
-              value={district}
-              onChange={(event) => setDistrict(event.target.value)}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-              required
-            >
-              <option value="">Select district</option>
-              {districtOptions.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Location</label>
-            <input
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              placeholder="Main Bazaar, Karimabad"
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-              required
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-800">Description</label>
-          <textarea
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="Share what makes your place or service worth discovering."
-            rows={4}
-            className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Contact person</label>
-            <input
-              value={contactPerson}
-              onChange={(event) => setContactPerson(event.target.value)}
-              placeholder="Reservation Manager"
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Phone</label>
-            <input
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder="+92-300-0000000"
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Business email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="stay@example.com"
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Website or social link</label>
-            <input
-              value={website}
-              onChange={(event) => setWebsite(event.target.value)}
-              placeholder="https://..."
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 outline-none ring-[#00798C]/20 transition focus:ring"
-            />
-          </div>
-        </div>
-
-        {error ? (
-          <p className="rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-700">
-            {error}
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Join InsightTravelPK Partners
+          </h1>
+          <p className="text-lg text-slate-600">
+            Bring your hotel, guesthouse, cafe, restaurant, guide service, or activity brand 
+            into the InsightTravelPK network and get discovered by travelers exploring Pakistan.
           </p>
-        ) : null}
-        {success ? (
-          <p className="rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-700">
-            {success}
-          </p>
-        ) : null}
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-2xl bg-[linear-gradient(135deg,#003D5B,#00798C)] px-4 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(0,61,91,0.24)] transition hover:translate-y-[-1px] hover:shadow-[0_22px_46px_rgba(0,61,91,0.30)] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? "Sending application..." : "Submit Partner Application"}
-        </button>
-      </form>
-    </TravelLoginShell>
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+          {error && (
+            <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50">
+              <p className="text-sm text-red-700 font-medium">{error}</p>
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 p-4 rounded-xl border border-green-200 bg-green-50">
+              <p className="text-sm text-green-700 font-medium">{success}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Business Info */}
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Business Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Business Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="e.g., Mountain Peak Hotel"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Business Type *
+                    </label>
+                    <select
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      {PARTNER_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {t.charAt(0).toUpperCase() + t.slice(1).replace("-", " ")}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Region *
+                    </label>
+                    <select
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      {REGIONS.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      District/City *
+                    </label>
+                    <input
+                      type="text"
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="e.g., Hunza"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Location/Address *
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Street address or landmark"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Business Description *
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Tell us about your business, unique offerings, and why travelers should visit..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Contact Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Contact Person *
+                  </label>
+                  <input
+                    type="text"
+                    value={contactPerson}
+                    onChange={(e) => setContactPerson(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone *
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="+92 XXX XXXXXXX"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Website (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="https://yourbusiness.com"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-6 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? "Submitting..." : "Submit Application"}
+              </button>
+              <p className="text-xs text-slate-500 text-center mt-3">
+                We'll review your application and get back to you within 5 business days.
+              </p>
+            </div>
+          </form>
+        </div>
+
+        {/* Info Section */}
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <span className="text-lg font-bold text-primary">✓</span>
+            </div>
+            <h3 className="font-semibold text-slate-900 mb-2">Admin Reviewed</h3>
+            <p className="text-sm text-slate-600">
+              Every application is carefully reviewed to maintain quality standards.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <span className="text-lg font-bold text-primary">★</span>
+            </div>
+            <h3 className="font-semibold text-slate-900 mb-2">Premium Visibility</h3>
+            <p className="text-sm text-slate-600">
+              Featured across destination pages where travelers discover the best places.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <span className="text-lg font-bold text-primary">→</span>
+            </div>
+            <h3 className="font-semibold text-slate-900 mb-2">Direct Bookings</h3>
+            <p className="text-sm text-slate-600">
+              Get connected directly with travelers planning trips to your region.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
