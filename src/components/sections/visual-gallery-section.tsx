@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/components/auth-context';
 import { AuthDialog } from '@/components/auth-dialog';
+import { useToast } from '@/hooks/use-toast';
 import {
   savePhoto, getAllPhotos, deletePhoto,
   type TravelerPhoto
@@ -99,7 +100,7 @@ function UploadModal({
   currentUserId,
 }: {
   onClose: () => void;
-  onUploaded: () => void;
+  onUploaded: () => void | Promise<void>;
   returnFocusRef: RefObject<HTMLElement | null>;
   currentUserId: string;
 }) {
@@ -185,7 +186,7 @@ function UploadModal({
         throw new Error(formatUploadError('firestore', err));
       }
 
-      onUploaded();
+      await onUploaded();
       onClose();
     } catch (err: any) {
       console.error("Upload process failed:", err);
@@ -475,6 +476,7 @@ function Lightbox({
 // ─── Main Gallery Section ──────────────────────────────────────────────────
 export default function VisualGallerySection() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [photos, setPhotos] = useState<TravelerPhoto[]>(DEFAULT_PHOTOS);
   const [showUpload, setShowUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -501,6 +503,15 @@ export default function VisualGallerySection() {
   }, []);
 
   useEffect(() => { loadPhotos(); }, [loadPhotos]);
+
+  const handleUploadSuccess = useCallback(async () => {
+    await loadPhotos();
+    setShowUpload(false);
+    toast({
+      title: 'Photo uploaded',
+      description: 'Your photo has been shared in the gallery successfully.',
+    });
+  }, [loadPhotos, toast]);
 
   const handleDelete = async (id: string, storagePath?: string) => {
     try {
@@ -611,7 +622,7 @@ export default function VisualGallerySection() {
       {showUpload && (
         <UploadModal
           onClose={() => setShowUpload(false)}
-          onUploaded={loadPhotos}
+          onUploaded={handleUploadSuccess}
           returnFocusRef={uploadReturnFocusRef}
           currentUserId={user!.uid}
         />
