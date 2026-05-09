@@ -5,6 +5,7 @@ import { provinces } from '@/lib/data';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight, ArrowLeft, Map as MapIcon, Type, CloudSun, Bookmark } from 'lucide-react';
+import VendorCtaSection from '@/components/sections/vendor-cta-section';
 
 import punjabSpots from "@/data/punjab.json";
 import sindhSpots from "@/data/sindh.json";
@@ -296,5 +297,6 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
           </div>
         </section>
       </main>
+      <VendorCtaSection />
   );
 }
