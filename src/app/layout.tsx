@@ -31,8 +31,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable} !scroll-smooth`} suppressHydrationWarning>
       <head>
-        {/* Google AdSense Placeholder */}
-        {/* <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXX" crossOrigin="anonymous"></script> */}
+        {/* Google Analytics (gtag) - uses NEXT_PUBLIC_GA_MEASUREMENT_ID */}
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body
         className="font-body antialiased flex flex-col min-h-screen"
