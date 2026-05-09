@@ -8,6 +8,7 @@ import ConnectivityManager from '@/components/connectivity-manager';
 import NavigationProgress from '@/components/navigation-progress';
 import { Inter, Poppins } from 'next/font/google';
 import { AuthProvider } from '@/components/auth-context';
+import GtagConsent from '@/components/gtag-consent';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
@@ -30,29 +31,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable} !scroll-smooth`} suppressHydrationWarning>
-      <head>
-        {/* Google Analytics (gtag) - uses NEXT_PUBLIC_GA_MEASUREMENT_ID */}
-        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}></script>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
-                `,
-              }}
-            />
-          </>
-        )}
-      </head>
+      <head />
       <body
         className="font-body antialiased flex flex-col min-h-screen"
         suppressHydrationWarning
       >
         <AuthProvider>
+          {/* Client-side GA consent loader (shows banner and loads gtag when accepted) */}
+          <GtagConsent />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[3000] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
