@@ -14,7 +14,7 @@ import { useAuth } from '@/components/auth-context';
 import { AuthDialog } from '@/components/auth-dialog';
 import { useToast } from '@/hooks/use-toast';
 import {
-  savePhoto, getAllPhotos, deletePhoto,
+  getAllPhotos, deletePhoto,
   type TravelerPhoto
 } from '@/lib/photo-db';
 import { formatFileSize } from '@/lib/utils';
@@ -59,7 +59,7 @@ const DEFAULT_PHOTOS: TravelerPhoto[] = [
   },
 ];
 
-function formatUploadError(stage: 'auth' | 'imagekit' | 'firestore', err: unknown) {
+function formatUploadError(stage: 'auth' | 'imagekit' | 'list', err: unknown) {
   const message =
     err instanceof Error
       ? err.message
@@ -75,7 +75,15 @@ function formatUploadError(stage: 'auth' | 'imagekit' | 'firestore', err: unknow
     return `ImageKit upload failed: ${message}`;
   }
 
-  return `Firestore save failed: ${message}`;
+  return `ImageKit gallery refresh failed: ${message}`;
+}
+
+function safeFileToken(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 30) || 'unknown';
 }
 
 function restoreFocusToOpener(
@@ -133,6 +141,7 @@ function UploadModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!preview) { setError('Please select a photo.'); return; }
     if (!form.name.trim()) { setError('Please enter your name.'); return; }
     if (!form.location.trim()) { setError('Please enter the location.'); return; }
@@ -140,28 +149,102 @@ function UploadModal({
     setLoading(true);
     try {
       // 1. Fetch authentication tokens from our own server
-      let token: string;
-      let signature: string;
-      let expire: number;
-      const authResponse = await fetch('/api/imagekit-auth');
-      if (!authResponse.ok) {
-        const details = await authResponse.json().catch(() => null);
-        throw new Error(details?.error || `Authorization endpoint returned ${authResponse.status}.`);
-      }
-      ({ token, signature, expire } = await authResponse.json());
+      const fetchImageKitAuth = async () => {
+        const authResponse = await fetch('/api/imagekit-auth', {
+          method: 'POST',
+          cache: 'no-store',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            Pragma: 'no-cache',
+          },
+          body: JSON.stringify({
+            nonce: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          }),
+        });
 
-      // 2. Upload DIRECTLY to ImageKit from browser
-      let uploadResponse;
-      try {
-        uploadResponse = await upload({
+        if (!authResponse.ok) {
+          const details = await authResponse.json().catch(() => null);
+          throw new Error(details?.error || `Authorization endpoint returned ${authResponse.status}.`);
+        }
+
+        return authResponse.json() as Promise<{ token: string; signature: string; expire: number }>;
+      };
+
+      const uploadWithAuth = async (auth: { token: string; signature: string; expire: number }) => {
+        const { token, signature, expire } = auth;
+        console.debug('ImageKit upload — using token:', token);
+        const uploadedAt = new Date().toLocaleDateString('en-PK', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        const safeNameToken = safeFileToken(form.name.trim());
+        const safeLocationToken = safeFileToken(form.location.trim());
+
+        const uploadBase = {
           publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
           file: preview,
-          fileName: `photo-${Date.now()}`,
-          folder: "/gallery",
+          fileName: `photo-${Date.now()}-${safeNameToken}-${safeLocationToken}`,
+          folder: '/gallery',
           token,
           signature,
-          expire
-        });
+          expire,
+          useUniqueFileName: true,
+        };
+
+        try {
+          console.debug('ImageKit upload attempt with metadata — token:', token, 'fileName:', uploadBase.fileName);
+          return await upload({
+            ...uploadBase,
+            customMetadata: {
+              name: form.name.trim(),
+              location: form.location.trim(),
+              caption: form.caption.trim(),
+              uploadedAt,
+              fileSize: String(fileInfo?.size ?? 0),
+              userId: currentUserId,
+            },
+          });
+        } catch (metaErr) {
+          console.debug('ImageKit upload failed with metadata — token:', token, 'error:', metaErr);
+          const msg = String((metaErr as Error)?.message || metaErr || '');
+          if (!msg.toLowerCase().includes('invalid custom metadata')) {
+            throw metaErr;
+          }
+
+          // Some ImageKit accounts require custom metadata fields to be pre-defined.
+          // Fetch a fresh auth token before retrying without metadata to avoid re-using
+          // a token that may have been consumed.
+          console.debug('Invalid custom metadata detected; fetching fresh auth and retrying without metadata');
+          const freshAuth = await fetchImageKitAuth();
+          console.debug('Retry upload (no-metadata) using fresh token:', freshAuth.token);
+          return await upload({
+            ...uploadBase,
+            token: freshAuth.token,
+            signature: freshAuth.signature,
+            expire: freshAuth.expire,
+          });
+        }
+      };
+
+      // 2. Upload DIRECTLY to ImageKit from browser (with metadata)
+      let uploadResponse;
+      try {
+        let auth = await fetchImageKitAuth();
+        try {
+          uploadResponse = await uploadWithAuth(auth);
+        } catch (uploadErr) {
+          const msg = String((uploadErr as Error)?.message || uploadErr || '').toLowerCase();
+          const tokenWasReused = msg.includes('token') && msg.includes('used before');
+          if (!tokenWasReused) {
+            throw uploadErr;
+          }
+
+          // Token can be consumed once. Refresh auth and retry exactly one time.
+          auth = await fetchImageKitAuth();
+          uploadResponse = await uploadWithAuth(auth);
+        }
       } catch (err) {
         throw new Error(formatUploadError('imagekit', err));
       }
@@ -170,21 +253,7 @@ function UploadModal({
         throw new Error("Upload completed without a valid ImageKit asset reference.");
       }
 
-      // 3. Save only URL and Metadata to Firestore
-      try {
-        await savePhoto({
-          name: form.name.trim(),
-          location: form.location.trim(),
-          caption: form.caption.trim(),
-          url: uploadResponse.url,
-          fileId: uploadResponse.fileId,
-          uploadedAt: new Date().toLocaleDateString('en-PK', { year: 'numeric', month: 'long', day: 'numeric' }),
-          fileSize: fileInfo?.size ?? 0,
-          userId: currentUserId,
-        });
-      } catch (err) {
-        throw new Error(formatUploadError('firestore', err));
-      }
+      // 3. Metadata is stored on ImageKit itself (no Firestore dependency)
 
       await onUploaded();
       onClose();
@@ -194,7 +263,7 @@ function UploadModal({
         setError(formatUploadError('auth', err));
       } else if (String(err?.message || "").startsWith("ImageKit upload failed:")) {
         setError(err.message);
-      } else if (String(err?.message || "").startsWith("Firestore save failed:")) {
+      } else if (String(err?.message || "").startsWith("ImageKit gallery refresh failed:")) {
         setError(err.message);
       } else {
         setError(err.message || 'Failed to save photo. Please try again.');
@@ -504,13 +573,18 @@ export default function VisualGallerySection() {
 
   useEffect(() => { loadPhotos(); }, [loadPhotos]);
 
-  const handleUploadSuccess = useCallback(() => {
-    void loadPhotos();
-    setShowUpload(false);
-    toast({
-      title: 'Photo uploaded',
-      description: 'Your photo has been shared in the gallery successfully.',
-    });
+  const handleUploadSuccess = useCallback(async () => {
+    try {
+      await loadPhotos();
+    } catch (err) {
+      console.error('Failed to reload photos after upload:', err);
+    } finally {
+      setShowUpload(false);
+      toast({
+        title: 'Photo uploaded',
+        description: 'Your photo has been shared in the gallery successfully.',
+      });
+    }
   }, [loadPhotos, toast]);
 
   const handleDelete = async (id: string, storagePath?: string) => {
@@ -528,7 +602,11 @@ export default function VisualGallerySection() {
     >
       <section className="py-20 md:py-32 bg-stone-50">
       <div className="container mx-auto px-4 md:px-8">
-        <AuthDialog isOpen={showAuthDialog} onClose={() => setShowAuthDialog(false)} />
+        <AuthDialog
+          isOpen={showAuthDialog}
+          onClose={() => setShowAuthDialog(false)}
+          onSuccess={() => setShowUpload(true)}
+        />
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row animate-fade-in-up items-center justify-between gap-6 mb-16">
@@ -619,12 +697,12 @@ export default function VisualGallerySection() {
       </div>
 
       {/* Upload Modal */}
-      {showUpload && (
+      {showUpload && user && (
         <UploadModal
           onClose={() => setShowUpload(false)}
           onUploaded={handleUploadSuccess}
           returnFocusRef={uploadReturnFocusRef}
-          currentUserId={user!.uid}
+          currentUserId={user.uid}
         />
       )}
 

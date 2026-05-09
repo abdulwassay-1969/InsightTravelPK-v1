@@ -16,9 +16,10 @@ import { useState } from "react";
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
+export function AuthDialog({ isOpen, onClose, onSuccess }: AuthDialogProps) {
   const { loginWithGoogle } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +27,7 @@ export function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     setError(null);
     try {
       await loginWithGoogle();
+      onSuccess?.();
       onClose();
     } catch (e) {
       console.error("Google login failed:", e);
