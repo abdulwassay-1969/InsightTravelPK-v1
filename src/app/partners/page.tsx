@@ -90,14 +90,13 @@ export default function PartnersPage() {
         {/* Header */}
         <div className="text-center mb-12 pt-8">
           <div className="inline-block px-4 py-1 rounded-full bg-primary/10 mb-4">
-            <span className="text-sm font-semibold text-primary">Partner Program</span>
+            <span className="text-sm font-semibold text-primary">Vendor Program</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Join InsightTravelPK Partners
+            Become A Vendor
           </h1>
           <p className="text-lg text-slate-600">
-            Bring your hotel, guesthouse, cafe, restaurant, guide service, or activity brand 
-            into the InsightTravelPK network and get discovered by travelers exploring Pakistan.
+            Become a vendor and register your hotel, event planning service or tour planning and booking service with us today to boost your business' visibility and gain lots of new customers.
           </p>
         </div>
 
