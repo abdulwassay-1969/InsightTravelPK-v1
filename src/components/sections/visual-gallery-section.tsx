@@ -546,7 +546,7 @@ function Lightbox({
 export default function VisualGallerySection() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [photos, setPhotos] = useState<TravelerPhoto[]>(DEFAULT_PHOTOS);
+  const [photos, setPhotos] = useState<TravelerPhoto[]>([]);
   const [showUpload, setShowUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [lightbox, setLightbox] = useState<number | null>(null);
@@ -565,9 +565,9 @@ export default function VisualGallerySection() {
   const loadPhotos = useCallback(async () => {
     try {
       const saved = await getAllPhotos();
-      setPhotos([...saved, ...DEFAULT_PHOTOS]);
+      setPhotos(saved);
     } catch {
-      setPhotos(DEFAULT_PHOTOS);
+      setPhotos([]);
     }
   }, []);
 
