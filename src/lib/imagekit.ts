@@ -1,4 +1,4 @@
-import ImageKit from "imagekit";
+import ImageKit from "@imagekit/nodejs";
 
 // Server-side instance (for deletions and auth generation)
 let imagekitInstance: ImageKit | null = null;
