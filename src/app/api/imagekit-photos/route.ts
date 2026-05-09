@@ -75,14 +75,28 @@ function toPhoto(item: ImageKitListItem): TravelerPhoto {
 }
 
 export const dynamic = 'force-dynamic';
-
 export async function GET() {
   try {
-    const files = (await getImageKit().listFiles({
-      path: '/gallery',
-      skip: 0,
-      limit: 100,
-    })) as ImageKitListItem[];
+    const ik = getImageKit();
+
+    // @imagekit/nodejs exposes callback-style methods. Promisify listFiles.
+    const files = await new Promise<ImageKitListItem[]>((resolve, reject) => {
+      try {
+        ik.listFiles(
+          {
+            path: '/gallery',
+            skip: 0,
+            limit: 100,
+          },
+          (err: any, result: any) => {
+            if (err) return reject(err);
+            return resolve(result || []);
+          }
+        );
+      } catch (err) {
+        reject(err);
+      }
+    });
 
     const photos = files
       .filter((item) => typeof item.fileId === 'string' && (item.url || item.thumbnail))
