@@ -494,15 +494,15 @@ function Lightbox({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4"
+      className="fixed inset-0 z-[99999] bg-black/95 flex flex-col items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
       onClick={onClose}
     >
       {/* Close */}
-      <button onClick={onClose} aria-label="Close photo viewer" className="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors z-10">
-        <X className="w-6 h-6" />
+      <button onClick={onClose} aria-label="Close photo viewer" className="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors z-[100000] cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }}>
+        <X className="w-7 h-7" />
       </button>
 
       {/* Nav */}
