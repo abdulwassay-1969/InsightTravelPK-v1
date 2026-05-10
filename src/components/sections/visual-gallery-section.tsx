@@ -103,12 +103,12 @@ function restoreFocusToOpener(
 // ─── Upload Modal ──────────────────────────────────────────────────────────
 function UploadModal({
   onClose,
-  onUploaded,
+  onUploadSuccess,
   returnFocusRef,
   currentUserId,
 }: {
   onClose: () => void;
-  onUploaded: () => void | Promise<void>;
+  onUploadSuccess: (data: { fileName: string; url: string; fileId: string; formData: { name: string; location: string; caption: string } }) => void;
   returnFocusRef: RefObject<HTMLElement | null>;
   currentUserId: string;
 }) {
@@ -253,10 +253,13 @@ function UploadModal({
         throw new Error("Upload completed without a valid ImageKit asset reference.");
       }
 
-      // 3. Metadata is stored on ImageKit itself (no Firestore dependency)
-
-      await onUploaded();
-      onClose();
+      // Call optimistic handler with upload response data
+      await handleUploadSuccessOptimistic({
+        fileName: uploadResponse.name || `photo-${Date.now()}`,
+        url: uploadResponse.url,
+        fileId: uploadResponse.fileId,
+        formData: form,
+      });
     } catch (err: any) {
       console.error("Upload process failed:", err);
       if (String(err?.message || "").includes("Authorization endpoint")) {
@@ -573,19 +576,60 @@ export default function VisualGallerySection() {
 
   useEffect(() => { loadPhotos(); }, [loadPhotos]);
 
-  const handleUploadSuccess = useCallback(async () => {
-    try {
-      await loadPhotos();
-    } catch (err) {
-      console.error('Failed to reload photos after upload:', err);
-    } finally {
+  const handleUploadSuccessOptimistic = useCallback(
+    async (uploadedPhoto: { fileName: string; url: string; fileId: string; formData: { name: string; location: string; caption: string } }) => {
+      const { url, fileId, formData } = uploadedPhoto;
+      const uploadedAt = new Date().toLocaleDateString('en-PK', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      // ✅ Step 1: Optimistically add photo immediately (user sees it right away)
+      const optimisticPhoto: TravelerPhoto = {
+        id: fileId,
+        name: formData.name.trim(),
+        location: formData.location.trim(),
+        caption: formData.caption.trim(),
+        dataUrl: url,
+        uploadedAt,
+        fileSize: 0,
+        storagePath: fileId,
+      };
+      setPhotos((prev) => [optimisticPhoto, ...prev]);
+
+      // ✅ Step 2: Close modal & show toast immediately
       setShowUpload(false);
       toast({
         title: 'Photo uploaded',
         description: 'Your photo has been shared in the gallery successfully.',
       });
-    }
-  }, [loadPhotos, toast]);
+
+      // ✅ Step 3: Refresh full list from API with retry (handles ImageKit indexing latency)
+      let retries = 0;
+      const maxRetries = 5;
+      const retryDelay = (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 5000);
+
+      const refreshGalleryWithRetry = async () => {
+        try {
+          const saved = await getAllPhotos();
+          setPhotos(saved);
+        } catch (err) {
+          if (retries < maxRetries) {
+            retries++;
+            await new Promise((resolve) => setTimeout(resolve, retryDelay(retries)));
+            await refreshGalleryWithRetry();
+          } else {
+            console.error('Failed to refresh gallery after max retries:', err);
+          }
+        }
+      };
+
+      // Wait 500ms for ImageKit indexing, then start retry loop
+      setTimeout(() => refreshGalleryWithRetry(), 500);
+    },
+    [toast]
+  );
 
   const handleDelete = async (id: string, storagePath?: string) => {
     try {
@@ -700,7 +744,7 @@ export default function VisualGallerySection() {
       {showUpload && user && (
         <UploadModal
           onClose={() => setShowUpload(false)}
-          onUploaded={handleUploadSuccess}
+          onUploadSuccess={handleUploadSuccessOptimistic}
           returnFocusRef={uploadReturnFocusRef}
           currentUserId={user.uid}
         />
