@@ -5,7 +5,6 @@ import { provinces } from '@/lib/data';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight, ArrowLeft, Map as MapIcon, Type, CloudSun, Bookmark } from 'lucide-react';
-import VendorCtaSection from '@/components/sections/vendor-cta-section';
 
 import punjabSpots from "@/data/punjab.json";
 import sindhSpots from "@/data/sindh.json";
@@ -35,7 +34,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
     const urls: Record<string, string> = {
       'gilgit-baltistan': 'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?q=80&w=2000&auto=format&fit=crop',
       'khyber-pakhtunkhwa': 'https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=2000&auto=format&fit=crop',
-      'punjab': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2000&auto=format&fit=crop',
+      'punjab': 'https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg',
       'sindh': 'https://images.unsplash.com/photo-1683553238308-9e33dcda0986?q=80&w=2000&auto=format&fit=crop',
       'balochistan': 'https://images.unsplash.com/photo-1604440095301-4ec2f9230155?q=80&w=2000&auto=format&fit=crop',
       'azad-kashmir': 'https://images.unsplash.com/photo-1604689846011-fabb50d9369c?q=80&w=2000&auto=format&fit=crop',
@@ -297,6 +296,5 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
           </div>
         </section>
       </main>
-      <VendorCtaSection />
   );
 }
