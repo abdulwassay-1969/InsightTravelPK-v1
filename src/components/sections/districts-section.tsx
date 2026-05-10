@@ -24,7 +24,7 @@ const provinceData = [
   {
     name: 'Punjab',
     slug: 'punjab',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2000&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1622547853917-cf084c82afcb?q=80&w=2000&auto=format&fit=crop',
     teaser: 'The land of five rivers, vibrant culture, and historical marvels.',
     colSpan: 'col-span-1'
   },

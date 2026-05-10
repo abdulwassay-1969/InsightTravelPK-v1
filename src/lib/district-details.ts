@@ -152,7 +152,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
         ],
     },
@@ -166,7 +166,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Peshawar Museum", description: "One of the best collections of Gandhara Buddhist art in the world." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
@@ -257,7 +257,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -291,7 +291,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Anarkali Bazaar", description: "One of the oldest surviving markets in South Asia, bustling with culture." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -307,7 +307,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
         ],
     },
     faisalabad: {
@@ -321,7 +321,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -335,7 +335,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Multan Craft Market", description: "Famous for blue-glazed pottery, camel-skin lamps, and handwoven textiles." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
@@ -351,7 +351,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -366,7 +366,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -410,7 +410,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Chauburji", description: "An imposing Mughal gateway monument near Lahore with four decorative towers." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
@@ -441,7 +441,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -472,7 +472,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         gallery: [
             "https://images.unsplash.com/photo-1717518215340-0d1184c493fa?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
         ],
     },
     mirpurkhas: {
@@ -501,7 +501,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1685369250486-053a9bf47faa?w=800",
-            "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
