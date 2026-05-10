@@ -21,7 +21,7 @@ const primaryNavLinks = [
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
   { href: '/about', label: 'About', icon: Info },
-  { href: '/partners', label: 'Become A Vendor', icon: Users },
+  { href: '/partners', label: 'Partners', icon: Users },
 ];
 
 const utilityLinks: { href: string; label: string; icon?: any }[] = [];

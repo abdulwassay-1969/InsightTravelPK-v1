@@ -254,7 +254,7 @@ function UploadModal({
       }
 
       // Call optimistic handler with upload response data
-      await handleUploadSuccessOptimistic({
+      await onUploadSuccess({
         fileName: uploadResponse.name || `photo-${Date.now()}`,
         url: uploadResponse.url,
         fileId: uploadResponse.fileId,

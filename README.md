@@ -25,7 +25,7 @@ It includes:
 - `/` public tourism homepage
 - `/pro/*` agency workspace
 - `/admin/*` platform admin portal
-- `/partners` vendor application page
+- `/partners` partner application page
 
 ## Development
 

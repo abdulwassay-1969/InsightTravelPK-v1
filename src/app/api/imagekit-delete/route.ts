@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing fileId." }, { status: 400 });
     }
 
-    await getImageKit().deleteFile(fileId);
+      await (getImageKit() as any).deleteFile(fileId);
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error("ImageKit delete error:", error);
