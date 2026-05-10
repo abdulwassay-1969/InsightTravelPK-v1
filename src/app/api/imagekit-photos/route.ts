@@ -75,66 +75,19 @@ function toPhoto(item: ImageKitListItem): TravelerPhoto {
 }
 
 export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
-    const ik = getImageKit();
+    const ik = getImageKit() as any;
 
-    // Try several possible client shapes so this works across @imagekit/nodejs versions.
-    const opts = { path: '/gallery', skip: 0, limit: 100 };
-
-    // Helper to promisify callback-style functions
-    const promisifyCall = (fn: Function) =>
-      new Promise<any[]>((resolve, reject) => {
-        try {
-          fn(opts, (err: any, result: any) => {
-            if (err) return reject(err);
-            resolve(result || []);
-          });
-        } catch (e) {
-          reject(e);
-        }
-      });
-
-    let files: ImageKitListItem[] = [];
-
-    // 1) If method returns a promise when called without callback
-    try {
-      const maybePromise = (ik as any).listFiles?.(opts);
-      if (maybePromise && typeof maybePromise.then === 'function') {
-        files = await maybePromise;
-      }
-    } catch (e) {
-      // ignore and try other shapes
-    }
-
-    // 2) If callback-style listFiles exists
-    if (!files.length && typeof (ik as any).listFiles === 'function') {
-      files = await promisifyCall((ik as any).listFiles.bind(ik));
-    }
-
-    // 3) Some versions expose under `api.listFiles`
-    if (!files.length && (ik as any).api && typeof (ik as any).api.listFiles === 'function') {
-      files = await promisifyCall((ik as any).api.listFiles.bind((ik as any).api));
-    }
-
-    // 4) Some versions expose under `files.list`
-    if (!files.length && (ik as any).files && typeof (ik as any).files.list === 'function') {
-      files = await promisifyCall((ik as any).files.list.bind((ik as any).files));
-    }
-
-    // 5) As a last resort, check for `list` on root
-    if (!files.length && typeof (ik as any).list === 'function') {
-      const maybe = (ik as any).list(opts);
-      if (maybe && typeof maybe.then === 'function') {
-        files = await maybe;
-      } else {
-        files = await promisifyCall((ik as any).list.bind(ik));
-      }
-    }
-
-    if (!files || !files.length) {
-      console.warn('ImageKit client did not return any files. Available keys:', Object.keys(ik));
-    }
+    // @imagekit/nodejs v7: uses client.assets.list() with path param
+    // Returns an array of File | Folder objects directly
+    const files = (await ik.assets.list({
+      path: '/gallery',
+      skip: 0,
+      limit: 100,
+      type: 'file',
+    })) as ImageKitListItem[];
 
     const photos = files
       .filter((item) => typeof item.fileId === 'string' && (item.url || item.thumbnail))

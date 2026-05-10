@@ -28,7 +28,7 @@ export const getImageKit = () => {
       publicKey,
       privateKey,
       urlEndpoint,
-    });
+    } as any);
   }
   return imagekitInstance;
 };
