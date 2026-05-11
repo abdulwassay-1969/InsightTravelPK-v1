@@ -94,7 +94,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
     'islamabad-capital-territory': {
       bestTime: 'September – April',
       weather: '20°C Pleasant',
-      about: 'Islamabad, the capital city of Pakistan, is nestled against the Margalla Hills. Known for its high standard of living, sweeping avenues, and lush greenery, it stands out with architectural wonders like the iconic Faisal Mosque.'
+      about: 'Islamabad, the capital city of Pakistan, is a premier tourist destination known for its modern infrastructure, scenic beauty, and serene ambiance. Nestled against the picturesque Margalla Hills, the city offers a unique blend of natural and urban attractions. Visitors can explore the iconic Faisal Mosque, one of the largest mosques in the world, and enjoy breathtaking views from Daman-e-Koh. The Pakistan Monument, symbolizing the unity of the nation, and the lush Shakarparian Park are must-visit sites. With its clean, green spaces and well-planned layout, Islamabad provides a peaceful and enriching experience for tourists seeking both tranquility and cultural richness.'
     }
   };
 
