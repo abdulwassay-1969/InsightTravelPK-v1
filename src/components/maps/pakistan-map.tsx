@@ -14,7 +14,7 @@ import {
   Tooltip,
   useMap,
 } from "react-leaflet";
-import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye, Fuel } from "lucide-react";
+import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye } from "lucide-react";
 import { LatLngBoundsExpression } from "leaflet";
 
 function MapResizer({ isOpen }: { isOpen: boolean }) {
@@ -55,7 +55,6 @@ import balochistanSpots from "@/data/balochistan.json";
 import gilgitBaltistanSpots from "@/data/gilgit_baltistan.json";
 import azadKashmirSpots from "@/data/azad_kashmir.json";
 import capitalSpots from "@/data/capital.json";
-import petrolPumps from "@/data/petrol_pumps.json";
 
 type SpotProperties = {
   _key?: string;
@@ -144,7 +143,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   Tower: "#4338ca",
   Temple: "#ea580c",
   Mine: "#52525b",
-  "Petrol Pump": "#ef4444",
 };
 
 const ROUTE_SEGMENT_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6"];
@@ -160,31 +158,6 @@ function getCategoryColor(category?: string | null) {
 
 function createCustomIcon(category: string, isActive: boolean) {
   const color = getCategoryColor(category);
-  
-  if (category === "Petrol Pump") {
-    return L.divIcon({
-      className: "custom-marker",
-      html: `
-        <div style="
-          width: ${isActive ? '28px' : '22px'}; 
-          height: ${isActive ? '28px' : '22px'}; 
-          background-color: #ef4444; 
-          border: 2px solid white; 
-          border-radius: 8px; 
-          box-shadow: 0 0 10px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-        ">
-          <svg xmlns="http://www.w3.org/2000/svg" width="${isActive ? '16' : '12'}" height="${isActive ? '16' : '12'}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22L15 22"/><path d="M4 9L14 9"/><path d="M14 22L14 4.5C14 3.12 12.88 2 11.5 2H6.5C5.12 2 4 3.12 4 4.5V22"/><path d="M18 22V17C18 15.89 18.9 15 20 15V15C21.1 15 22 15.89 22 17V22"/><path d="M14 13L18 17"/><circle cx="9" cy="9" r="2"/></svg>
-        </div>
-      `,
-      iconSize: [isActive ? 28 : 22, isActive ? 28 : 22],
-      iconAnchor: [isActive ? 14 : 11, isActive ? 14 : 11],
-    });
-  }
-
   return L.divIcon({
     className: "custom-marker",
     html: `
@@ -880,38 +853,6 @@ export default function PakistanMap() {
                   crossOrigin="anonymous"
                 />
               </LayersControl.BaseLayer>
-
-              <LayersControl.Overlay name="Petrol Pumps">
-                <MarkerClusterGroup>
-                  {petrolPumps.features.map((spot, idx) => {
-                    const p = spot.properties;
-                    const latLng = getSpotLatLng(spot as SpotFeature);
-                    if (!latLng) return null;
-                    return (
-                      <Marker
-                        key={`pump-${idx}`}
-                        position={latLng}
-                        icon={createCustomIcon("Petrol Pump", false)}
-                      >
-                        <Popup className="custom-popup" minWidth={200}>
-                          <div className="p-2 space-y-2 bg-white/95 backdrop-blur-sm rounded-lg">
-                            <div className="border-b border-red-100 pb-2">
-                              <h3 className="font-bold text-sm text-red-900 leading-tight">{p._key}</h3>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <Fuel className="h-2 w-2 text-red-600" />
-                                <p className="text-[9px] text-red-700 uppercase font-bold tracking-wider">{p.district}, {p.province}</p>
-                              </div>
-                            </div>
-                            <p className="text-xs text-slate-600 leading-relaxed">
-                              {p.Desc}
-                            </p>
-                          </div>
-                        </Popup>
-                      </Marker>
-                    );
-                  })}
-                </MarkerClusterGroup>
-              </LayersControl.Overlay>
               <LayersControl.Overlay checked name="3D Hillshade">
                 <TileLayer
                   attribution='Tiles &copy; Esri'
