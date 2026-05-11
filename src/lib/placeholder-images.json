@@ -105,13 +105,13 @@
     {
       "id": "district-islamabad",
       "description": "The Faisal Mosque in Islamabad against the backdrop of Margalla Hills.",
-      "imageUrl": "https://images.unsplash.com/photo-1644337544049-08fb5ac82628?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtb2Rlcm4lMjBtb3NxdWV8ZW58MHx8fHwxNzY1OTg5NjQwfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad.jpeg?updatedAt=1778410320483",
       "imageHint": "modern mosque"
     },
     {
       "id": "district-muzaffarabad",
       "description": "A view of Muzaffarabad city with Neelum river.",
-      "imageUrl": "https://images.unsplash.com/photo-1604689846011-fabb50d9369c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjaXR5JTIwcml2ZXJ8ZW58MHx8fHwxNzY1OTg0ODUzfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/muzaffarabad.jpg",
       "imageHint": "city river"
     },
     {
@@ -257,6 +257,18 @@
       "description": "A view of the Zhob River.",
       "imageUrl": "https://images.unsplash.com/photo-1654182146345-39c224a44dec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyaXZlciUyMHZpZXd8ZW58MHx8fHwxNzY1OTcyMDQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "river view"
+    },
+    {
+      "id": "district-neelum-valley",
+      "description": "The bow-shaped Neelum Valley with its stunning greenery.",
+      "imageUrl": "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg",
+      "imageHint": "green valley"
+    },
+    {
+      "id": "district-poonch",
+      "description": "The beautiful Pearl Valley of Rawalakot.",
+      "imageUrl": "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Rawalakot.jpg",
+      "imageHint": "mountain valley"
     }
   ]
 }

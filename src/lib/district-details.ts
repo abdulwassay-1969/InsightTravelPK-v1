@@ -1,6 +1,7 @@
 export type Attraction = {
     name: string;
     description: string;
+    image?: string;
 };
 
 export type DistrictDetail = {
@@ -131,14 +132,29 @@ const districtDetails: Record<string, DistrictDetail> = {
             "Muzaffarabad, the capital of Azad Jammu & Kashmir, sits at the confluence of the Neelum and Jhelum rivers. It is surrounded by forested hills and serves as the gateway to the scenic Neelum Valley.",
         bestTime: "March – October",
         attractions: [
-            { name: "Neelum Valley", description: "A paradise of rivers, forests, and meadows stretching toward the Line of Control." },
-            { name: "Red Fort (Muzaffarabad Fort)", description: "A 16th-century Mughal fort overlooking the Jhelum River." },
-            { name: "Pir Chinasi", description: "A sacred hill station at 2,900m offering panoramic views of the city." },
+            { 
+                name: "Pir Chinasi", 
+                description: "A sacred hill station at 2,900m offering panoramic views of the city.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Pir%20Chinasi.jpg"
+            },
+            { 
+                name: "Neelum Valley", 
+                description: "A paradise of rivers, forests, and meadows stretching toward the Line of Control.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg"
+            },
+            { 
+                name: "Red Fort (Muzaffarabad Fort)", 
+                description: "A 16th-century Mughal fort overlooking the Jhelum River.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/muzaffarabad.jpg"
+            },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800",
-            "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800",
-            "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/muzaffarabad.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Pir%20Chinasi.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Dhanni%20Waterfall.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Arang%20kel.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Sharda%20Peeth.jpg",
         ],
     },
     islamabad: {
@@ -146,14 +162,31 @@ const districtDetails: Record<string, DistrictDetail> = {
             "Islamabad, Pakistan's modern capital, is nestled against the Margalla Hills. It is one of the most planned and beautiful capitals in Asia, offering a blend of modernity, nature, and culture.",
         bestTime: "October – April",
         attractions: [
-            { name: "Faisal Mosque", description: "One of the largest mosques in the world, an iconic symbol of Pakistan." },
-            { name: "Margalla Hills National Park", description: "A national park offering hiking trails, wildlife, and stunning city views." },
-            { name: "Lok Virsa Museum", description: "A museum showcasing Pakistan's rich folk and traditional heritage." },
+            { 
+                name: "Faisal Mosque", 
+                description: "One of the largest mosques in the world, an iconic symbol of Pakistan.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad.jpeg?updatedAt=1778410320483"
+            },
+            { 
+                name: "Margalla Hills National Park", 
+                description: "A national park offering hiking trails, wildlife, and stunning city views.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad%20margla%20hills.jpeg?updatedAt=1778410320368"
+            },
+            { 
+                name: "Lok Virsa Museum", 
+                description: "A museum showcasing Pakistan's rich folk and traditional heritage.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Lok%20Virsa%20Museum.webp"
+            },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
-            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad.jpeg?updatedAt=1778410320483",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad%20margla%20hills.jpeg?updatedAt=1778410320368",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/monoment.webp",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Panjpeer%20Rocks.webp",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Shumber%20Waterfalls.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Lok%20Virsa%20Museum.webp",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Pir%20Sohawa.webp",
+            "https://ik.imagekit.io/odxmgomft/gallery/islamabad/Bruti%20waterfall%20Islamabad.jpg",
         ],
     },
     peshawar: {
@@ -166,7 +199,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Peshawar Museum", description: "One of the best collections of Gandhara Buddhist art in the world." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
@@ -257,7 +290,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -291,7 +324,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Anarkali Bazaar", description: "One of the oldest surviving markets in South Asia, bustling with culture." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -307,7 +340,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
         ],
     },
     faisalabad: {
@@ -321,7 +354,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -335,7 +368,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Multan Craft Market", description: "Famous for blue-glazed pottery, camel-skin lamps, and handwoven textiles." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
@@ -351,7 +384,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -366,7 +399,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -410,7 +443,7 @@ const districtDetails: Record<string, DistrictDetail> = {
             { name: "Chauburji", description: "An imposing Mughal gateway monument near Lahore with four decorative towers." },
         ],
         gallery: [
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
@@ -441,7 +474,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800",
         ],
     },
@@ -472,7 +505,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         gallery: [
             "https://images.unsplash.com/photo-1717518215340-0d1184c493fa?w=800",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
         ],
     },
     mirpurkhas: {
@@ -501,7 +534,7 @@ const districtDetails: Record<string, DistrictDetail> = {
         ],
         gallery: [
             "https://images.unsplash.com/photo-1685369250486-053a9bf47faa?w=800",
-            "https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=800",
+            "https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg",
             "https://images.unsplash.com/photo-1565354148893-eee43a2e28e4?w=800",
         ],
     },
@@ -623,6 +656,66 @@ const districtDetails: Record<string, DistrictDetail> = {
             "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800",
             "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800",
             "https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=800",
+        ],
+    },
+    "neelum-valley": {
+        description:
+            "Neelum Valley is a 144 km long bow-shaped valley in Azad Kashmir. It is known for its lush greenery, towering hills, noisy river, and attractive waterfalls.",
+        bestTime: "April – October",
+        attractions: [
+            { 
+                name: "Arang Kel", 
+                description: "A breathtaking village and tourist spot on a hilltop above Kel, known as the Pearl of Neelum.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Arang%20kel.jpg"
+            },
+            { 
+                name: "Sharda Peeth", 
+                description: "An ancient Hindu temple and historic learning center ruins in the village of Sharda.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Sharda%20Peeth.jpg"
+            },
+            { 
+                name: "Neelum River", 
+                description: "A powerful, scenic river that flows throughout the valley.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg"
+            },
+            { 
+                name: "Ratti Galli Waterfall", 
+                description: "A stunning alpine waterfall fed by the Ratti Gali glacial lake.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Ratti%20Galli%20Waterfall.webp"
+            },
+        ],
+        gallery: [
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Arang%20kel.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Sharda%20Peeth.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Ratti%20Galli%20Waterfall.webp",
+        ],
+    },
+    poonch: {
+        description:
+            "Poonch District, with its capital Rawalakot, is famous as the 'Pearl Valley'. It offers high-altitude meadows, serene lakes, and a pleasant summer climate.",
+        bestTime: "April – October",
+        attractions: [
+            { 
+                name: "Rawalakot", 
+                description: "The heart of Pearl Valley, known for its natural beauty and cool weather.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Rawalakot.jpg"
+            },
+            { 
+                name: "Banjosa Lake", 
+                description: "A scenic artificial lake surrounded by pine forests and mountains.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Banjosa%20Lake.jpg"
+            },
+            { 
+                name: "Toli Pir", 
+                description: "The highest hilltop in the region with expansive meadows and breathtaking views.",
+                image: "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Toli%20Pir.webp"
+            },
+        ],
+        gallery: [
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Rawalakot.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Banjosa%20Lake.jpg",
+            "https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Toli%20Pir.webp",
         ],
     },
 };

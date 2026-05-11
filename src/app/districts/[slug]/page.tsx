@@ -131,13 +131,34 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
                 {detail.attractions.map((attr, i) => (
                   <div
                     key={i}
-                    className="bg-secondary/40 border border-border rounded-xl p-5 hover:shadow-md transition-shadow"
+                    className="group bg-secondary/40 border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
                   >
-                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-primary font-bold text-sm">{i + 1}</span>
+                    {attr.image && (
+                      <div className="relative h-48 w-full overflow-hidden">
+                        <Image
+                          src={attr.image}
+                          alt={attr.name}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center z-10">
+                          <span className="text-primary font-bold text-xs">{i + 1}</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-5 flex flex-col flex-grow">
+                      {!attr.image && (
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                          <span className="text-primary font-bold text-sm">{i + 1}</span>
+                        </div>
+                      )}
+                      <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {attr.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {attr.description}
+                      </p>
                     </div>
-                    <h3 className="font-semibold text-foreground mb-1">{attr.name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{attr.description}</p>
                   </div>
                 ))}
               </div>

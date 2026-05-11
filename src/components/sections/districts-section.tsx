@@ -24,7 +24,7 @@ const provinceData = [
   {
     name: 'Punjab',
     slug: 'punjab',
-    image: 'https://images.unsplash.com/photo-1622547853917-cf084c82afcb?q=80&w=2000&auto=format&fit=crop',
+    image: 'https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg',
     teaser: 'The land of five rivers, vibrant culture, and historical marvels.',
     colSpan: 'col-span-1'
   },
@@ -45,14 +45,14 @@ const provinceData = [
   {
     name: 'Azad Kashmir',
     slug: 'azad-kashmir',
-    image: 'https://images.unsplash.com/photo-1604689846011-fabb50d9369c?q=80&w=2000&auto=format&fit=crop',
+    image: 'https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg',
     teaser: 'Heaven on earth with its dense forests and crystal clear lakes.',
     colSpan: 'col-span-1'
   },
   {
     name: 'Islamabad Capital',
     slug: 'islamabad-capital-territory',
-    image: 'https://images.unsplash.com/photo-1644337544049-08fb5ac82628?q=80&w=2000&auto=format&fit=crop',
+    image: 'https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad.jpeg?updatedAt=1778410320483',
     teaser: 'Margalla hills nested capital offering a blend of nature and modern life.',
     colSpan: 'md:col-span-2 lg:col-span-1'
   }

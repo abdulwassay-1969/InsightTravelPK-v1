@@ -36,7 +36,7 @@ const DEFAULT_PHOTOS: TravelerPhoto[] = [
   {
     id: 'seed-3', name: 'Usman Tariq', location: 'Lahore',
     caption: 'Badshahi Mosque at dusk — timeless Mughal grandeur.',
-    dataUrl: 'https://images.unsplash.com/photo-1622547853917-cf084c82afcb?w=1080&q=90',
+    dataUrl: 'https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg',
     uploadedAt: '2026-02-25', fileSize: 0,
   },
   {

@@ -37,8 +37,8 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
       'punjab': 'https://ik.imagekit.io/odxmgomft/gallery/Lahore/lahore.jpeg',
       'sindh': 'https://images.unsplash.com/photo-1683553238308-9e33dcda0986?q=80&w=2000&auto=format&fit=crop',
       'balochistan': 'https://images.unsplash.com/photo-1604440095301-4ec2f9230155?q=80&w=2000&auto=format&fit=crop',
-      'azad-kashmir': 'https://images.unsplash.com/photo-1604689846011-fabb50d9369c?q=80&w=2000&auto=format&fit=crop',
-      'islamabad-capital-territory': 'https://images.unsplash.com/photo-1644337544049-08fb5ac82628?q=80&w=2000&auto=format&fit=crop',
+      'azad-kashmir': 'https://ik.imagekit.io/odxmgomft/gallery/Kashmir/Neelam%20Valley.jpg',
+      'islamabad-capital-territory': 'https://ik.imagekit.io/odxmgomft/gallery/islamabad/islamabad.jpeg?updatedAt=1778410320483',
     };
     return urls[slug] || 'https://images.unsplash.com/photo-1596422846543-74cac3b74db1?q=80&w=2000&auto=format&fit=crop';
   };
@@ -89,7 +89,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
     'azad-kashmir': {
       bestTime: 'March – October',
       weather: '16°C Breezy',
-      about: 'Azad Kashmir is often described as "Heaven on Earth." It is abundantly green, filled with thick alpine forests, sweeping valleys like Neelum, and crystal clear meandering rivers. It’s an absolute paradise for nature lovers and hikers.'
+      about: "AJ&K (Azad Jammu and Kashmir), nestled in the picturesque Himalayas, is a region of breathtaking beauty and rich cultural heritage. Governed by its own president and prime minister, it enjoys semi-autonomous status within Pakistan. Blessed with lush valleys, towering peaks, and serene rivers, it's a heaven for nature enthusiasts and adventurers alike. The diverse population, comprising various ethnicities, contributes to its vibrant tapestry of traditions and customs. AJ&K's economy thrives on agriculture, tourism, and remittances. Despite political complexities, its people exhibit resilience and hospitality, embodying the essence of freedom and resilience in the face of challenges."
     },
     'islamabad-capital-territory': {
       bestTime: 'September – April',
@@ -255,27 +255,41 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
                 {spots.map((spot: any, index: number) => {
                   const p = spot.properties;
                   return (
-                    <div key={`${p._key}-${index}`} className="group relative bg-stone-50 rounded-2xl p-6 border border-slate-200 hover:border-primary/50 transition-colors hover:shadow-xl hover:bg-white flex flex-col h-full">
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary">
-                          {p.category || 'Spot'}
-                        </span>
-                        <MapPin className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" />
-                      </div>
-
-                      <h3 className="text-xl font-bold text-slate-900 mb-2 font-headline line-clamp-2">
-                        {p._key || 'Tourist Destination'}
-                      </h3>
-
-                      {p.district && (
-                        <p className="text-sm text-slate-500 font-medium mb-4 flex items-center">
-                          {p.district} {p.tehsil ? `• ${p.tehsil}` : ''}
-                        </p>
+                    <div key={`${p._key}-${index}`} className="group relative bg-stone-50 rounded-2xl border border-slate-200 hover:border-primary/50 transition-colors hover:shadow-xl hover:bg-white flex flex-col h-full overflow-hidden">
+                      {p.image && (
+                        <div className="relative h-48 w-full overflow-hidden">
+                          <Image
+                            src={p.image}
+                            alt={p._key}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        </div>
                       )}
+                      
+                      <div className="p-6 flex flex-col flex-grow">
+                        <div className="flex items-start justify-between mb-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary">
+                            {p.category || 'Spot'}
+                          </span>
+                          <MapPin className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" />
+                        </div>
 
-                      <p className="text-sm text-slate-600 line-clamp-3 mt-auto relative z-10 group-hover:text-slate-700 transition-colors">
-                        {p.Desc || "Experience the breathtaking beauty and cultural heritage of this magnificent location."}
-                      </p>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2 font-headline line-clamp-2">
+                          {p._key || 'Tourist Destination'}
+                        </h3>
+
+                        {p.district && (
+                          <p className="text-sm text-slate-500 font-medium mb-4 flex items-center">
+                            {p.district} {p.tehsil ? `• ${p.tehsil}` : ''}
+                          </p>
+                        )}
+
+                        <p className="text-sm text-slate-600 line-clamp-3 mt-auto relative z-10 group-hover:text-slate-700 transition-colors">
+                          {p.Desc || "Experience the breathtaking beauty and cultural heritage of this magnificent location."}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}

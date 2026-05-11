@@ -43,6 +43,8 @@ export const provinces: Province[] = [
     slug: 'azad-kashmir',
     districts: [
       { name: 'Muzaffarabad', slug: 'muzaffarabad', image: 'district-muzaffarabad' },
+      { name: 'Neelum Valley', slug: 'neelum-valley', image: 'district-neelum-valley' },
+      { name: 'Poonch', slug: 'poonch', image: 'district-poonch' },
     ],
   },
   {
