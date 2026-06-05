@@ -9,6 +9,7 @@ import NavigationProgress from '@/components/navigation-progress';
 import { Inter, Poppins } from 'next/font/google';
 import { AuthProvider } from '@/components/auth-context';
 import GtagConsent from '@/components/gtag-consent';
+import FloatingWidget from '@/components/assistant/floating-widget';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({
@@ -52,6 +53,7 @@ export default function RootLayout({
           </Suspense>
           <main id="main-content" className="flex-grow">{children}</main>
           <Footer />
+          <FloatingWidget />
           <Toaster />
         </AuthProvider>
       </body>

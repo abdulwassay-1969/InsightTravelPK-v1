@@ -4,7 +4,7 @@ import { getPlaceholderImage } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronRight, Clock, MapPin, Star } from 'lucide-react';
+import { ChevronRight, Clock, MapPin, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PhotoGallery from '@/components/district/photo-gallery';
 import BookmarkButton from '@/components/district/bookmark-button';
@@ -112,6 +112,25 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-5xl">
+
+        <section className="mb-10 rounded-3xl border border-sky-200 bg-white/90 p-5 shadow-lg shadow-sky-100/50 backdrop-blur">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
+                <Sparkles className="h-4 w-4" /> AI travel assistant
+              </div>
+              <h2 className="mt-2 text-2xl font-bold text-foreground">Ask about {district.name} directly</h2>
+              <p className="mt-2 max-w-2xl text-muted-foreground">
+                Open a context-aware tourism chat for {district.name}. The assistant already knows the district and province, so users do not need to repeat the location.
+              </p>
+            </div>
+            <Button asChild className="rounded-full bg-[#003D5B] text-white hover:bg-[#005173]">
+              <Link href={`/assistant?districtSlug=${district.slug}&provinceSlug=${province.slug}&reset=1`}>
+                Open assistant <ChevronRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
 
         {detail ? (
           <>

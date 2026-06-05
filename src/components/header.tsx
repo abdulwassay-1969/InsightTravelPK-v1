@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, LogIn, Users
+  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, LogIn, Users, Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -17,6 +17,7 @@ const primaryNavLinks = [
   { href: '/#provinces', label: 'Provinces', icon: Compass },
   { href: '/map', label: 'Map', icon: Map },
   { href: '/virtual-tour', label: 'Tours', icon: Camera },
+  { href: '/assistant', label: 'Assistant', icon: Bot },
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
@@ -41,6 +42,7 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
   return (
     <header
       className={cn(

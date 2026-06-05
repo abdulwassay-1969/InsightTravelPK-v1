@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { provinces } from '@/lib/data';
 import { getPlaceholderImage } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
-import { MapPin, ArrowRight, ArrowLeft, Map as MapIcon, Type, CloudSun, Bookmark } from 'lucide-react';
+import { MapPin, ArrowRight, ArrowLeft, Map as MapIcon, Type, CloudSun, Bookmark, Sparkles } from 'lucide-react';
 
 import punjabSpots from "@/data/punjab.json";
 import sindhSpots from "@/data/sindh.json";
@@ -163,6 +163,11 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
                   <Button asChild className="rounded-full shadow-lg hover:shadow-primary/30 px-8">
                     <Link href={`/map?region=${province.slug}`}>
                       Open Full Screen Explorer <MapIcon className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="rounded-full px-8 border-primary/30 text-primary hover:bg-primary/5">
+                    <Link href={`/assistant?provinceSlug=${province.slug}&reset=1`}>
+                      <Sparkles className="w-4 h-4 mr-2" /> Ask the assistant
                     </Link>
                   </Button>
                 </div>
