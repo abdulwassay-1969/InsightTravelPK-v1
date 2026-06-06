@@ -1,4 +1,3 @@
-'use server';
 /**
  * @fileOverview InsightTravelPK tourism assistant flow.
  *

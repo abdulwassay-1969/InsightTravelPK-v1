@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Menu, Search, Home, Map,
-  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, LogIn, Users, Bot
+  ImageIcon, Compass, CloudSun, BookOpen, Info, Camera, LogIn, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -17,7 +17,6 @@ const primaryNavLinks = [
   { href: '/#provinces', label: 'Provinces', icon: Compass },
   { href: '/map', label: 'Map', icon: Map },
   { href: '/virtual-tour', label: 'Tours', icon: Camera },
-  { href: '/assistant', label: 'Assistant', icon: Bot },
   { href: '/gallery', label: 'Gallery', icon: ImageIcon },
   { href: '/weather', label: 'Weather', icon: CloudSun },
   { href: '/blog', label: 'Blog', icon: BookOpen },
@@ -327,8 +326,12 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent title="Navigation menu" side="right" className="w-[85%] sm:max-w-xs bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 p-0 text-white">
-                <div className="flex flex-col h-full">
+              <SheetContent
+                title="Navigation menu"
+                side="right"
+                className="w-[85%] sm:max-w-xs bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 p-0 text-white overflow-hidden"
+              >
+                <div className="flex h-full flex-col overflow-y-auto overscroll-contain">
                   <div className="p-8 border-b border-white/10">
                     <Link href="/" className="flex items-center gap-3">
                       <div className="p-2.5 rounded-xl bg-primary">
@@ -359,7 +362,7 @@ export default function Header() {
                     </nav>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto py-5 px-4">
+                  <div className="flex-1 py-5 px-4">
                     <p className="px-5 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
                       Access
                     </p>
@@ -417,7 +420,7 @@ export default function Header() {
                     </div>
                   </div>
 
-                  <div className="p-8 mt-auto border-t border-white/10 bg-black/40 text-center">
+                  <div className="mt-auto p-8 border-t border-white/10 bg-black/40 text-center">
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-[0.3em] mb-6">
                       Truly Pakistan
                     </p>

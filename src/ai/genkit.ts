@@ -17,7 +17,6 @@ const defaultGeminiModel =
 export const ai = genkit({
   plugins: [googleAI({ 
     apiKey: googleGenAiApiKey(),
-    apiVersion: 'v1'
   })],
   model: defaultGeminiModel,
 });
