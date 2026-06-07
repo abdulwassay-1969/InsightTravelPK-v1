@@ -25,6 +25,12 @@ export const metadata: Metadata = {
     'Discover the breathtaking beauty and rich cultural heritage of Pakistan. Your official guide to tourism in Pakistan.',
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
