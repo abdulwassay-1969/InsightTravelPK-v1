@@ -62,14 +62,14 @@ const blurUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfF
 
 export default function DistrictsSection() {
   return (
-    <section id="provinces" className="py-20 md:py-32 bg-stone-50">
+    <section id="provinces" className="py-16 md:py-32 bg-stone-50">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-5 md:gap-6">
           <div className="max-w-2xl">
-            <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 font-headline md:text-5xl">
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 font-headline sm:text-4xl md:text-5xl">
               Provinces of <span className="text-primary">Pakistan</span>
             </h2>
-            <p className="mt-4 text-xl text-slate-600 font-medium">
+            <p className="mt-4 text-base sm:text-lg md:text-xl text-slate-600 font-medium">
               Explore the cultural and geographical diversity of Pakistan’s breathtaking regions. From snowy peaks to golden deserts.
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function DistrictsSection() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[350px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-[260px] sm:auto-rows-[320px] md:auto-rows-[350px]">
           {provinceData.map((province) => (
             <Link 
               href={`/provinces/${province.slug}`} 
@@ -97,18 +97,18 @@ export default function DistrictsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent transition-opacity duration-300" />
               
-              <CardContent className="absolute inset-0 flex flex-col justify-end p-8 text-white">
+              <CardContent className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 text-white">
                 <div className="transform transition-transform duration-500 ease-out translate-y-4 group-hover:translate-y-0">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wider uppercase mb-3">
                     <MapPin className="w-3 h-3" /> Region
                   </span>
-                  <CardTitle className="text-3xl font-bold font-headline mb-2 drop-shadow-md">
+                  <CardTitle className="text-2xl sm:text-3xl font-bold font-headline mb-2 drop-shadow-md">
                     {province.name}
                   </CardTitle>
                   <p className="text-sm md:text-base text-slate-200 line-clamp-2 md:line-clamp-none opacity-0 transition-opacity duration-500 delay-100 group-hover:opacity-100">
                     {province.teaser}
                   </p>
-                  <div className="mt-6 flex items-center text-primary font-bold text-sm bg-white w-max px-5 py-2.5 rounded-full opacity-0 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 group-hover:opacity-100 uppercase tracking-widest shadow-xl">
+                  <div className="mt-4 sm:mt-6 flex items-center text-primary font-bold text-xs sm:text-sm bg-white w-max px-4 sm:px-5 py-2.5 rounded-full opacity-0 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 group-hover:opacity-100 uppercase tracking-widest shadow-xl">
                     Explore <ArrowRight className="ml-2 w-4 h-4" />
                   </div>
                 </div>

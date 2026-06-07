@@ -28,22 +28,22 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-950 text-slate-300 pt-20 pb-10 border-t border-slate-800">
+    <footer className="bg-slate-950 text-slate-300 pt-14 pb-8 md:pt-20 md:pb-10 border-t border-slate-800">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16">
           
           {/* Brand & About */}
           <div className="flex flex-col items-start lg:pr-4">
-            <Link href="/" className="flex items-center gap-3 font-bold text-2xl mb-6 text-white group">
+            <Link href="/" className="flex items-center gap-3 font-bold text-xl sm:text-2xl mb-5 md:mb-6 text-white group">
               <div className="p-2 rounded-xl bg-primary group-hover:bg-primary/80 transition-colors">
                 <Logo className="h-6 w-6 text-white" />
               </div>
               <span className="tracking-tight">InsightTravelPK</span>
             </Link>
-            <p className="text-slate-400 mb-8 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-400 mb-6 md:mb-8 leading-relaxed">
               Your ultimate guide to discovering the untold beauty, rich culture, and breathtaking landscapes of Pakistan. Let the adventure begin.
             </p>
-            <div className="flex gap-4" aria-label="Social links coming soon">
+            <div className="flex gap-3 sm:gap-4" aria-label="Social links coming soon">
               <button type="button" disabled title="Coming soon" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center opacity-70 cursor-not-allowed">
                 <Instagram className="w-5 h-5" />
               </button>
@@ -61,8 +61,8 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-6 tracking-wide">Explore</h3>
-            <ul className="space-y-3 font-medium">
+            <h3 className="text-white font-bold text-lg mb-5 md:mb-6 tracking-wide">Explore</h3>
+            <ul className="space-y-3 text-sm sm:text-base font-medium">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="hover:text-primary transition-colors flex items-center gap-2">
@@ -75,8 +75,8 @@ export default function Footer() {
 
           {/* Provinces */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-6 tracking-wide">Top Regions</h3>
-            <ul className="space-y-3 font-medium">
+            <h3 className="text-white font-bold text-lg mb-5 md:mb-6 tracking-wide">Top Regions</h3>
+            <ul className="space-y-3 text-sm sm:text-base font-medium">
               {provinceLinks.map((province) => (
                 <li key={province.label}>
                   <Link href="/#provinces" className="hover:text-primary transition-colors flex items-center gap-2">
@@ -89,8 +89,8 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-6 tracking-wide">Stay Inspired</h3>
-            <p className="text-slate-400 mb-6 font-medium">
+            <h3 className="text-white font-bold text-lg mb-5 md:mb-6 tracking-wide">Stay Inspired</h3>
+            <p className="text-sm sm:text-base text-slate-400 mb-5 md:mb-6 font-medium">
               Newsletter signup is coming soon. For now, use the planner and destination pages to start your trip.
             </p>
             <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
@@ -108,7 +108,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-800/60 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-slate-500">
+        <div className="pt-6 md:pt-8 border-t border-slate-800/60 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 text-xs sm:text-sm font-medium text-slate-500">
           <p>© {new Date().getFullYear()} InsightTravelPK. Crafted with love for Pakistan.</p>
           <div className="flex gap-6">
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>

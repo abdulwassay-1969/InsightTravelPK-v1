@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${poppins.variable} !scroll-smooth`} suppressHydrationWarning>
       <head />
       <body
-        className="font-body antialiased flex flex-col min-h-screen"
+        className="font-body antialiased flex flex-col min-h-screen overflow-x-hidden"
         suppressHydrationWarning
       >
         <AuthProvider>

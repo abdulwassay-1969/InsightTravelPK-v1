@@ -73,7 +73,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden xl:flex items-center gap-6">
             <nav className="flex items-center gap-0">
               {primaryNavLinks.map((link) => (
                 <Link
@@ -290,7 +290,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Actions */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="flex lg:flex xl:hidden items-center gap-2">
             <Button
               asChild
               variant="ghost"
@@ -307,6 +307,20 @@ export default function Header() {
               <Link href="/map" aria-label="Open map page">
                 <Search className="h-4 w-4" />
               </Link>
+            </Button>
+
+            <Button
+              asChild
+              className={cn(
+                "rounded-full font-bold shadow-md transition-all text-sm whitespace-nowrap px-4 py-2",
+                isScrolled
+                  ? "bg-primary text-white hover:bg-primary/90"
+                  : isHomePage
+                    ? "bg-white text-primary hover:bg-neutral-100"
+                    : "bg-primary text-white hover:bg-primary/90"
+              )}
+            >
+              <Link href="/planner">Plan</Link>
             </Button>
 
             <Sheet>
