@@ -217,7 +217,7 @@ export function AdminPanel({ userId }: AdminPanelProps) {
       <Card className="bg-slate-800/40 border-slate-700 text-white shadow-lg">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-bold flex items-center gap-2">
-            <meg-phone className="h-5 w-5 text-teal-400" />
+            <Megaphone className="h-5 w-5 text-teal-400" />
             Advisory Broadcast History
           </CardTitle>
           <CardDescription className="text-xs text-slate-400">
