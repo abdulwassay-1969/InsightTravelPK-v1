@@ -14,7 +14,7 @@ import {
   Tooltip,
   useMap,
 } from "react-leaflet";
-import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye } from "lucide-react";
+import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye, Loader2 } from "lucide-react";
 import { LatLngBoundsExpression } from "leaflet";
 
 function MapResizer({ isOpen }: { isOpen: boolean }) {
@@ -1008,6 +1008,101 @@ export default function PakistanMap() {
                       <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-widest">Select a Destination</h4>
                       <p className="text-[11px] text-slate-500">Click a marker on the map to view its details and start a virtual tour.</p>
                     </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Route & Distance Planner Card */}
+              <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-teal-500/10">
+                <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+                  <div className="flex items-center gap-2">
+                    <Compass className="h-4 w-4 text-teal-400" />
+                    <span className="font-bold text-xs uppercase tracking-widest text-white">Route Planner</span>
+                  </div>
+                </div>
+                
+                <div className="p-5 space-y-4">
+                  {/* Select Start */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Start Location</label>
+                    <select
+                      value={fromSpotKey}
+                      onChange={(e) => setFromSpotKey(e.target.value)}
+                      className="w-full h-10 bg-[#0f2027] border border-white/10 rounded-xl px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    >
+                      <option value="none">Choose start...</option>
+                      {spotOptions.map((opt) => (
+                        <option key={`from-${opt.key}`} value={opt.key}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Select End */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Destination</label>
+                    <select
+                      value={toSpotKey}
+                      onChange={(e) => setToSpotKey(e.target.value)}
+                      className="w-full h-10 bg-[#0f2027] border border-white/10 rounded-xl px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    >
+                      <option value="none">Choose destination...</option>
+                      {spotOptions.map((opt) => (
+                        <option key={`to-${opt.key}`} value={opt.key}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Route Info Display */}
+                  {routeLoading && (
+                    <div className="flex items-center justify-center py-2 text-xs text-slate-400 gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-teal-500" />
+                      <span>Calculating route...</span>
+                    </div>
+                  )}
+
+                  {routeError && (
+                    <div className="text-xs text-red-400 bg-red-950/20 p-2.5 rounded-xl border border-red-900/30">
+                      {routeError}
+                    </div>
+                  )}
+
+                  {routeInfo && !routeLoading && (
+                    <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-400">Total Distance:</span>
+                        <span className="font-bold text-teal-400">{routeInfo.distanceKm.toFixed(1)} km</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-400">Driving Duration:</span>
+                        <span className="font-bold text-white">
+                          {routeInfo.durationMin > 60 
+                            ? `${Math.floor(routeInfo.durationMin / 60)}h ${Math.round(routeInfo.durationMin % 60)}m`
+                            : `${Math.round(routeInfo.durationMin)} mins`
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Clear Route Button */}
+                  {(fromSpotKey !== "none" || toSpotKey !== "none") && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFromSpotKey("none");
+                        setToSpotKey("none");
+                        setRouteInfo(null);
+                        setRouteError(null);
+                      }}
+                      className="w-full text-xs border-white/10 hover:bg-white/5 text-slate-300"
+                    >
+                      Clear Route
+                    </Button>
                   )}
                 </div>
               </div>
