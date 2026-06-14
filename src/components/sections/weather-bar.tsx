@@ -95,29 +95,33 @@ export default function WeatherBar() {
 
   return (
     <Shell tone="">
-      <div className="flex flex-col gap-5 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-start gap-3 sm:gap-4">
-          <WeatherIcon iconName={current.icon} className="h-12 w-12 shrink-0 sm:h-16 sm:w-16" />
+      <div className="flex flex-row items-center justify-between gap-4 py-3 sm:py-4">
+        {/* Today's Weather */}
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <WeatherIcon iconName={current.icon} className="h-10 w-10 shrink-0 sm:h-14 sm:w-14 md:h-16 md:w-16" />
           <div className="min-w-0">
-            <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-300 sm:text-sm sm:tracking-wide">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 sm:text-xs md:text-sm sm:tracking-wide">
               {city} Weather
             </div>
-            <div className="mt-1 text-3xl font-bold leading-none sm:text-4xl">
-              {current.temp}
-              <span className="align-top text-xl sm:text-2xl">&deg;C</span>
-            </div>
-            <div className="mt-1 line-clamp-2 text-xs text-slate-300 sm:text-sm">
-              {current.description}
+            <div className="mt-0.5 flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+              <div className="text-xl font-bold leading-none sm:text-3xl md:text-4xl">
+                {current.temp}
+                <span className="align-top text-xs sm:text-sm md:text-2xl">&deg;C</span>
+              </div>
+              <div className="text-[11px] text-slate-300 sm:text-xs md:text-sm truncate max-w-[120px] sm:max-w-none">
+                {current.description}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4 lg:flex lg:flex-1 lg:justify-center lg:gap-3">
+        {/* 7-Day Forecast - Hidden on mobile/minimized screens, visible in full page (lg) */}
+        <div className="hidden lg:flex lg:flex-1 lg:justify-center lg:gap-3">
           {forecast.map((day) => (
-            <div key={day.day} className="flex flex-col items-center rounded-2xl bg-white/5 px-2 py-3 sm:px-3">
-              <div className="text-[11px] font-semibold sm:text-sm">{day.day}</div>
-              <WeatherIcon iconName={day.icon} className="my-1 h-7 w-7 sm:h-8 sm:w-8" />
-              <div className="text-xs sm:text-sm">
+            <div key={day.day} className="flex flex-col items-center rounded-2xl bg-white/5 px-3 py-3">
+              <div className="text-xs font-semibold">{day.day}</div>
+              <WeatherIcon iconName={day.icon} className="my-1 h-8 w-8" />
+              <div className="text-xs">
                 <span className="text-red-400">{day.high}&deg;</span>
                 <span className="ml-1 text-blue-400">{day.low}&deg;</span>
               </div>
@@ -125,10 +129,11 @@ export default function WeatherBar() {
           ))}
         </div>
 
+        {/* View More Button */}
         <Button
           asChild
           variant="outline"
-          className="w-full border-white bg-transparent text-white hover:bg-white hover:text-slate-800 lg:w-auto"
+          className="border-white bg-transparent text-xs text-white hover:bg-white hover:text-slate-800 px-3 py-1.5 sm:px-4 sm:py-2 h-auto w-auto shrink-0"
         >
           <Link href="/weather">View More</Link>
         </Button>

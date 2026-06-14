@@ -18,7 +18,7 @@ export default function BlogPage() {
             Explorer Insights
           </Badge>
           <h1 className="text-4xl md:text-6xl font-headline font-black text-[#003D5B] tracking-tight">
-            The PakVista Blog
+            The InsightTravelPK Blog
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-medium">
             Discover travel stories, destination guides, and local secrets from every corner of Pakistan.

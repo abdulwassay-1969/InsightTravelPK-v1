@@ -6,6 +6,7 @@ import VisualGallerySection from '@/components/sections/visual-gallery-section';
 import WhyPakistanSection from '@/components/sections/why-pakistan-section';
 import TravelTipsSection from '@/components/sections/travel-tips-section';
 
+
 export default function Home() {
   return (
     <>
@@ -19,3 +20,5 @@ export default function Home() {
     </>
   );
 }
+
+
