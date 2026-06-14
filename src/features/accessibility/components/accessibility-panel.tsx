@@ -16,7 +16,7 @@ import {
   Mountain,
 } from 'lucide-react';
 import { getAccessibilityInfo, getHealthcareFacilities, PROVINCES } from '../actions';
-import type { AccessibilityInfo, HealthcareFacility } from '../actions';
+import type { AccessibilityInfo, HospitalInfo } from '../actions';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -60,8 +60,8 @@ function AccessibilityItem({
 
 // ─── Hospital card ────────────────────────────────────────────────────────────
 
-function HospitalCard({ facility }: { facility: HealthcareFacility }) {
-  const typeColors: Record<HealthcareFacility['type'], string> = {
+function HospitalCard({ facility }: { facility: HospitalInfo }) {
+  const typeColors: Record<HospitalInfo['type'], string> = {
     Public: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
     Private: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
     Military: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
@@ -99,7 +99,7 @@ function HospitalCard({ facility }: { facility: HealthcareFacility }) {
 
 export default function AccessibilityPanel({ locationId, locationName }: Props) {
   const [info, setInfo] = useState<AccessibilityInfo | null>(null);
-  const [hospitals, setHospitals] = useState<HealthcareFacility[]>([]);
+  const [hospitals, setHospitals] = useState<HospitalInfo[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string>(PROVINCES[0]);
   const [loadingInfo, setLoadingInfo] = useState(true);
   const [loadingHospitals, setLoadingHospitals] = useState(false);
