@@ -23,7 +23,8 @@ import {
   Calendar,
   Lock,
   Wifi,
-  CloudSun
+  CloudSun,
+  Users
 } from 'lucide-react';
 
 export default function FeaturesDashboard() {
