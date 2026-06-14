@@ -111,7 +111,7 @@ export default function AccessibilityPanel({ locationId, locationName }: Props) 
       try {
         setLoadingInfo(true);
         setError(null);
-        const data = await getAccessibilityInfo(locationId);
+        const data = await getAccessibilityInfo(locationId, locationName);
         setInfo(data);
       } catch {
         setError('Failed to load accessibility information.');
@@ -120,7 +120,7 @@ export default function AccessibilityPanel({ locationId, locationName }: Props) 
       }
     }
     load();
-  }, [locationId]);
+  }, [locationId, locationName]);
 
   // Load hospitals when province changes
   useEffect(() => {
