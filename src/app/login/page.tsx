@@ -24,7 +24,12 @@ export default function LoginPage() {
       await loginWithEmail(email, password, remember);
       router.push("/saved-trips");
     } catch (err: any) {
-      setError(err?.message || "Failed to sign in. Please check your credentials.");
+      // Show exact Firebase error code for easier debugging
+      // eslint-disable-next-line no-console
+      console.error('Login error:', err);
+      setError(
+        err?.code ? `${err.code}: ${err?.message || 'Login failed.'}` : (err?.message || "Failed to sign in. Please check your credentials.")
+      );
     } finally {
       setLoading(false);
     }
