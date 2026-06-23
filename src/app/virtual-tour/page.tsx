@@ -64,8 +64,8 @@ export default function VirtualTourPage() {
           </div>
 
           {/* Pakistan Motorcycle Tour Card */}
-          <div className="rounded-[2.5rem] border border-slate-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-xl hover:border-teal-500/20">
-            <div className="p-8 md:p-12 space-y-8">
+          <div className="rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-xl hover:border-teal-500/20">
+            <div className="p-4 sm:p-8 md:p-12 space-y-8">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
                   <h3 className="text-2xl md:text-3xl font-black text-[#003D5B] tracking-tight">Pakistan Motorcycle Tour</h3>
@@ -128,7 +128,7 @@ export default function VirtualTourPage() {
         </div>
 
         {/* Support Section */}
-        <div className="rounded-[3rem] bg-slate-900 p-12 md:p-20 text-center text-white space-y-8 relative overflow-hidden">
+        <div className="rounded-[2rem] md:rounded-[3rem] bg-slate-900 p-6 sm:p-12 md:p-20 text-center text-white space-y-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] -mr-32 -mt-32" />
           <div className="max-w-2xl mx-auto space-y-6 relative">
             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10">

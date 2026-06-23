@@ -110,7 +110,7 @@ export default function BlogPage() {
         </div>
 
         {/* Newsletter / CTA */}
-        <div className="mt-24 rounded-[3rem] bg-[#003D5B] p-12 md:p-20 text-center text-white space-y-8 relative overflow-hidden">
+        <div className="mt-24 rounded-[2rem] md:rounded-[3rem] bg-[#003D5B] p-6 sm:p-12 md:p-20 text-center text-white space-y-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] -mr-32 -mt-32" />
           <div className="max-w-2xl mx-auto space-y-6 relative">
             <h3 className="text-3xl md:text-4xl font-black tracking-tight">Stay Updated on Pakistan Travel</h3>

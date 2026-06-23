@@ -103,7 +103,7 @@ export default async function ProvincePage({ params }: { params: Promise<{ slug:
   return (
       <main className="min-h-screen bg-stone-50 pb-20">
         {/* Province Hero Section */}
-        <section className="relative h-[60vh] md:h-[70vh] w-full flex items-end pb-16">
+        <section className="relative min-h-[500px] h-[60vh] md:min-h-[600px] md:h-[70vh] w-full flex items-end pb-16">
           <Image
             src={heroImage}
             alt={province.name}

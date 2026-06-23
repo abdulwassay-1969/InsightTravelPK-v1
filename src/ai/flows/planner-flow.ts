@@ -165,10 +165,19 @@ const plannerFlow = ai.defineFlow(
       throw new Error('Failed to generate a travel plan.');
     }
 
+    // Trip nights: 1 less than the number of days (but never less than 1).
     const nights = Math.max(1, input.duration - 1);
-    const travelers = Math.max(1, input.adults + input.children); // toddlers are often free, but let's just use adults + children for cost
 
-    const budgetBases: Record<string, { acc: number, food: number, transport: number, activities: number }> = {
+    // Travelers count used for cost estimation.
+    // Toddlers are often free, so we exclude them from cost calculations.
+    const travelers = Math.max(1, input.adults + input.children);
+
+    // Base budget “per night / per day / per person” tunings.
+    // These numbers are not produced by the LLM; they are deterministic app-side estimates.
+    const budgetBases: Record<
+      string,
+      { acc: number; food: number; transport: number; activities: number }
+    > = {
       'Economy': { acc: 4000, food: 1500, transport: 2000, activities: 1000 },
       'Mid-Range': { acc: 8000, food: 3000, transport: 4000, activities: 2000 },
       'Comfortable': { acc: 15000, food: 5000, transport: 8000, activities: 4000 },

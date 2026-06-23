@@ -56,7 +56,7 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
   return (
     <div className="bg-gradient-to-br from-slate-100 via-white to-lime-50">
       {/* Hero */}
-      <div className="relative h-[60vh] w-full">
+      <div className="relative min-h-[480px] h-[60vh] w-full">
         <Image
           src={image.imageUrl}
           alt={image.description}

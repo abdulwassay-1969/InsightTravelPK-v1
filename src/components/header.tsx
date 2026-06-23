@@ -350,7 +350,7 @@ export default function Header() {
                         <SheetClose asChild key={link.href}>
                           <Link
                             href={link.href}
-                            className="flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                            className="flex items-center gap-4 px-5 py-2.5 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
                           >
                             <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
                               <link.icon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />
@@ -371,7 +371,7 @@ export default function Header() {
                         <SheetClose asChild key={link.href}>
                           <Link
                             href={link.href}
-                            className="flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
+                            className="flex items-center gap-4 px-5 py-2.5 rounded-2xl text-lg font-medium text-slate-400 transition-all hover:bg-white/5 hover:text-white active:scale-95 group"
                           >
                             <div className="p-2.5 rounded-xl bg-white/5 group-hover:bg-primary/20 transition-colors">
                               <link.icon className="h-5 w-5 text-slate-500 group-hover:text-primary transition-colors" />

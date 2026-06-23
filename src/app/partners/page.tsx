@@ -85,7 +85,7 @@ export default function PartnersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4 pt-24 md:pt-32">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 pt-8">
@@ -102,7 +102,7 @@ export default function PartnersPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
           {error && (
             <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50">
               <p className="text-sm text-red-700 font-medium">{error}</p>

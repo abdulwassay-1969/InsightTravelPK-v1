@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -739,7 +739,7 @@ export default function TourismChatbot({ initialContext, title, subtitle, compac
               </div>
             </div>
 
-            <div className="flex min-h-[560px] flex-col">
+            <div className="flex min-h-[300px] h-[55dvh] max-h-[560px] flex-col">
               <div className="flex-1 space-y-4 overflow-y-auto bg-[radial-gradient(circle_at_top_left,rgba(0,121,140,0.05),transparent_28%),linear-gradient(180deg,rgba(250,252,255,1),rgba(255,255,255,1))] px-4 py-5 md:px-6">
                 {messages.map((message) => renderMessageBubble(message, 'compact'))}
 
