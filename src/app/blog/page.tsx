@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, ArrowRight, User, Tag } from 'lucide-react';
 import { BLOG_POSTS } from '@/lib/blog-data';
+import Image from 'next/image';
 
 export default function BlogPage() {
   return (
@@ -30,10 +31,12 @@ export default function BlogPage() {
           <Link key={post.id} href={`/blog/${post.id}`} className="block mb-12 group">
             <div className="relative rounded-[2.5rem] overflow-hidden border border-slate-200 bg-white shadow-sm transition-all hover:shadow-2xl hover:border-teal-500/20 grid md:grid-cols-2">
               <div className="relative h-[300px] md:h-full overflow-hidden">
-                <img 
+                <Image 
                   src={post.image} 
                   alt={post.title} 
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="absolute inset-0 object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute top-6 left-6">
                   <Badge className="bg-white/90 backdrop-blur-md text-teal-700 font-bold border-none">
@@ -74,10 +77,12 @@ export default function BlogPage() {
             <Link key={post.id} href={`/blog/${post.id}`} className="group h-full">
               <Card className="h-full flex flex-col rounded-3xl overflow-hidden border border-slate-200 bg-white/80 backdrop-blur-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:border-teal-500/20">
                 <div className="relative h-48 overflow-hidden">
-                  <img 
+                  <Image 
                     src={post.image} 
                     alt={post.title} 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="absolute inset-0 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
                 <CardHeader className="space-y-4">

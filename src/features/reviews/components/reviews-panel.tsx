@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, StarHalf, StarOff, MessageSquare, User, Loader, Calendar, Upload, CheckCircle2, Copy } from 'lucide-react';
 import { submitReview, getLocationReviews, type LocationReview } from '../actions';
+import Image from 'next/image';
 
 interface ReviewsPanelProps {
   userId: string;
@@ -129,7 +130,7 @@ export function ReviewsPanel({ userId, userName, locationId, locationName }: Rev
                   </div>
                   <p className="text-sm text-slate-300 mb-1">{rev.text}</p>
                   {rev.photoUrl && (
-                    <img src={rev.photoUrl} alt="review" className="w-full h-40 object-cover rounded" />
+                    <Image src={rev.photoUrl} alt="review" width={600} height={240} className="w-full h-40 object-cover rounded" />
                   )}
                   <div className="flex items-center space-x-2 text-xs text-slate-500 mt-1">
                     <Calendar className="h-3 w-3" />

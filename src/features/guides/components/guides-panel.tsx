@@ -15,6 +15,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { searchGuides, bookGuide, rateGuide, type Guide } from '../actions';
+import Image from 'next/image';
 
 interface GuidesPanelProps {
   userId: string;
@@ -90,9 +91,11 @@ export function GuidesPanel({ userId, locationName }: GuidesPanelProps) {
           return (
             <Card key={guideIdStr} className="bg-slate-900/30 border-slate-700/50 text-white overflow-hidden shadow-md hover:shadow-lg transition-all">
               <CardContent className="p-4 flex gap-4">
-                <img 
+                <Image 
                   src={guide.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"} 
                   alt={guide.name} 
+                  width={56}
+                  height={56}
                   className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 shrink-0"
                 />
                 

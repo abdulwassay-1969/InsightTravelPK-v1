@@ -9,6 +9,7 @@ import {
   Compass, Leaf, Users, Sun, Filter, X, ArrowRight
 } from 'lucide-react';
 import { advancedSearch, type SearchFilters, type SearchResult } from '../actions';
+import Image from 'next/image';
 
 export function DiscoveryPanel() {
   const [filters, setFilters] = useState<SearchFilters>({});
@@ -179,8 +180,10 @@ export function DiscoveryPanel() {
               {results.map(dest => (
                 <Card key={dest.id} className="bg-slate-800/40 border-slate-700 text-white overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all group">
                   <div className="relative h-36 overflow-hidden">
-                    <img src={dest.imageUrl} alt={dest.name}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <Image src={dest.imageUrl} alt={dest.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="absolute inset-0 object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
                     <span className={`absolute top-3 right-3 text-[9px] font-bold border px-2 py-0.5 rounded-full capitalize ${difficultyColors[dest.difficulty] || 'bg-slate-800/80 text-slate-300 border-slate-600'}`}>
                       {dest.difficulty}

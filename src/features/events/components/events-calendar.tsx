@@ -6,6 +6,7 @@ import { getUpcomingEvents, getEventsByProvince, PakistanEvent } from '../action
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const PROVINCES = [
   'All',
@@ -51,11 +52,15 @@ function EventCard({ event }: { event: PakistanEvent }) {
       {/* Image */}
       <div className="relative h-44 overflow-hidden bg-slate-700">
         {event.imageUrl ? (
-          <img
-            src={event.imageUrl}
-            alt={event.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+          <div className="relative w-full h-full">
+            <Image
+              src={event.imageUrl}
+              alt={event.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <Calendar className="w-12 h-12 text-slate-500" />

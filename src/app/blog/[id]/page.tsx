@@ -7,6 +7,7 @@ import { Calendar, Clock, ArrowLeft, Tag, User, Share2, Facebook, Twitter, Messa
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -54,10 +55,13 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
 
         {/* Featured Image */}
         <div className="rounded-[3rem] overflow-hidden border border-slate-200 shadow-2xl mb-12 relative aspect-[21/9]">
-          <img 
+          <Image 
             src={post.image} 
             alt={post.title} 
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
         </div>
 

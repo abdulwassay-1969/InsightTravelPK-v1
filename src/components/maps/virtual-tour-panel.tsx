@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { generateAiTourGuide } from '@/app/actions/ai-guide';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface VirtualTourPanelProps {
   isOpen: boolean;
@@ -135,12 +136,14 @@ export function VirtualTourPanel({ isOpen, onClose, location }: VirtualTourPanel
                       <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
                     </div>
                   )}
-                  <img
+                  <Image
                     src={location.imageUrl}
                     alt={location.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 500px"
                     onLoad={() => setIsImageLoading(false)}
                     className={cn(
-                      "w-full h-full object-cover animate-ken-burns scale-110 transition-opacity duration-700",
+                      "object-cover animate-ken-burns scale-110 transition-opacity duration-700",
                       isImageLoading ? "opacity-0" : "opacity-100"
                     )}
                   />

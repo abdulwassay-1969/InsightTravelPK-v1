@@ -5,7 +5,6 @@ import { Facebook, Instagram, Twitter, Youtube, Send, MapPin } from 'lucide-reac
 import Logo from './logo';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { usePathname } from 'next/navigation';
 
 const quickLinks = [
   { href: '/', label: 'Home' },
@@ -19,7 +18,6 @@ const quickLinks = [
 ];
 
 export default function Footer() {
-  const pathname = usePathname();
   const provinceLinks = [
     { label: "Gilgit-Baltistan" },
     { label: "Khyber Pakhtunkhwa" },
@@ -28,9 +26,6 @@ export default function Footer() {
     { label: "Balochistan" },
     { label: "Azad Kashmir" },
   ];
-
-  // Hide footer on full-screen map page so the map explorer has clean layout on mobile
-  if (pathname === '/map') return null;
 
   return (
     <footer className="bg-slate-950 text-slate-300 pt-14 pb-8 md:pt-20 md:pb-10 border-t border-slate-800">

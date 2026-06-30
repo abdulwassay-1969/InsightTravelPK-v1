@@ -16,6 +16,7 @@ import {
 } from "react-leaflet";
 import { Compass, Sparkles, Search, MapPin, Filter, ArrowRight, Info, Eye, Loader2 } from "lucide-react";
 import { LatLngBoundsExpression } from "leaflet";
+import Image from "next/image";
 
 function MapResizer({ isOpen }: { isOpen: boolean }) {
   const map = useMap();
@@ -757,7 +758,7 @@ export default function PakistanMap() {
   }, [selectedSpots, searchQuery]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#0f2027] overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#0f2027]">
       {/* Top Navigation / Filter Bar */}
       <div className="z-[1000] p-4 md:p-6 bg-[#0f2027] border-b border-white/10 shadow-2xl">
         <div className="container mx-auto">
@@ -816,7 +817,7 @@ export default function PakistanMap() {
       </div>
 
       {/* Main Interactive Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex h-[600px] md:h-[80vh] overflow-hidden">
         {/* Map Container */}
         <div className="flex-1 relative">
           <MapContainer
@@ -969,10 +970,12 @@ export default function PakistanMap() {
                     <div className="space-y-4 animate-in slide-in-from-right-4 duration-500">
                       {tourLocation.imageUrl && (
                         <div className="relative aspect-video rounded-xl overflow-hidden group">
-                          <img 
+                          <Image 
                             src={tourLocation.imageUrl} 
                             alt={tourLocation.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            fill
+                            sizes="380px"
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         </div>
